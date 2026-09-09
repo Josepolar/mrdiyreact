@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MR.D.I.Y. Careers</string>
+
+    <!-- Google Sign-In - Replace with actual Client ID from Firebase Console -->
+    <string name="default_web_client_id">YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com</string>
+
+    <!-- Navigation Labels -->
+    <string name="nav_home">Home</string>
+    <string name="nav_jobs">Jobs</string>
+    <string name="nav_alerts">Alerts</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Home Screen -->
+    <string name="search_hint">Search jobs, skills, locations…</string>
+    <string name="filter_label">Filter</string>
+    <string name="section_recommended">RECOMMENDED FOR YOU</string>
+
+    <!-- Filter Chips -->
+    <string name="chip_all">All Jobs</string>
+    <string name="chip_fulltime">Full-time</string>
+    <string name="chip_parttime">Part-time</string>
+    <string name="chip_cebu">Cebu</string>
+    <string name="chip_manila">Metro Manila</string>
+    <string name="chip_davao">Davao</string>
+
+    <!-- Job Detail -->
+    <string name="job_details_title">Job Details</string>
+    <string name="salary_label">Monthly Salary Range</string>
+    <string name="about_role_label">About the Role</string>
+    <string name="responsibilities_label">Responsibilities</string>
+    <string name="requirements_label">Requirements</string>
+    <string name="benefits_label">Benefits</string>
+    <string name="btn_apply">Apply Now</string>
+    <string name="btn_save">Save</string>
+
+    <!-- Profile -->
+    <string name="profile_title">My Profile</string>
+    <string name="edit_profile">Edit</string>
+    <string name="add_experience">+ Add</string>
+    <string name="change_photo">Change Profile Photo</string>
+
+    <!-- Stats -->
+    <string name="stat_applications">Applications</string>
+    <string name="stat_interviews">Interviews</string>
+    <string name="stat_profile_complete">Profile</string>
+
+    <!-- Profile Sections -->
+    <string name="section_personal_info">Personal Info</string>
+    <string name="section_about_me">About Me</string>
+    <string name="section_skills">Skills</string>
+    <string name="section_experience">Work Experience</string>
+
+    <!-- Edit Profile -->
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="section_personal_information">Personal Information</string>
+    <string name="section_professional_details">Professional Details</string>
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="hint_email">Email Address</string>
+    <string name="hint_phone">Phone Number</string>
+    <string name="hint_location">Location</string>
+    <string name="hint_desired_position">Desired Position</string>
+    <string name="hint_about_me">About Me</string>
+    <string name="hint_skills">Skills (comma-separated)</string>
+    <string name="helper_skills">e.g. Customer Service, Sales, Inventory</string>
+    <string name="btn_save_changes">Save Changes</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_notifications">Notifications</string>
+    <string name="cd_messages">Messages</string>
+    <string name="cd_save_job">Save job</string>
+    <string name="cd_share_job">Share job</string>
+    <string name="cd_edit_profile">Edit profile</string>
+    <string name="cd_change_photo">Change profile photo</string>
+
+</resources>

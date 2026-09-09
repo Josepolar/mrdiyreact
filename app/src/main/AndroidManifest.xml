@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mrdiy.careers">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MrDIYCareers">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- Launcher -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!--
+                FIX #11 — Deep-link intent-filter for email-verification callback.
+
+                WHY THIS IS NEEDED:
+                  Supabase sends the user a verification email containing a link
+                  like:
+                    https://sfjpiyevasnmvddgtofz.supabase.co/auth/v1/verify?token=…
+                      &redirect_to=mrdiy://login-callback
+
+                  When the user taps that link, Supabase redirects to
+                  "mrdiy://login-callback?access_token=…&refresh_token=…".
+                  Without this intent-filter, Android cannot route that URL to
+                  the app and the verification silently fails.
+
+                ALSO REQUIRED in your Supabase dashboard:
+                  Authentication → URL Configuration → Redirect URLs
+                  Add: mrdiy://login-callback
+
+                  Authentication → URL Configuration → Site URL
+                  Set: mrdiy://login-callback
+
+                  (The scheme "mrdiy" and host "login-callback" match the values
+                  configured in SupabaseProvider.install(Auth) { scheme/host }.)
+            -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="mrdiy"
+                    android:host="login-callback" />
+            </intent-filter>
+
+        </activity>
+
+    </application>
+
+</manifest>

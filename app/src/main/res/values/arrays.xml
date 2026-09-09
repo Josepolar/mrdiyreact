@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="salary_defaults">
+        <item>0</item>
+        <item>100000</item>
+    </integer-array>
+</resources>
