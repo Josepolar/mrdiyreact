@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Android: Start emulator",
+      "type": "shell",
+      "command": "$sdk = 'C:\\Users\\HP\\AppData\\Local\\Android\\Sdk'; $adb = Join-Path $sdk 'platform-tools\\adb.exe'; $emulator = Join-Path $sdk 'emulator\\emulator.exe'; $device = (& $adb devices | Select-String '\\tdevice$'); if (-not $device) { Start-Process $emulator -ArgumentList '-avd Pixel_10a -no-snapshot -netdelay none -netspeed full' }; do { Start-Sleep -Seconds 2; $device = (& $adb devices | Select-String '\\tdevice$') } while (-not $device); Write-Host 'Emulator is ready.'",
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Android: Build, install and launch",
+      "type": "shell",
+      "command": ".\\run-local.ps1",
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+        }
+      },
+      "dependsOn": "Android: Start emulator",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Android: Open emulator",
+      "type": "shell",
+      "command": "Start-Process 'C:\\Users\\HP\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe' -ArgumentList '-avd Pixel_10a'",
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+        }
+      },
+      "problemMatcher": []
+    }
+  ]
+}

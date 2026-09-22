@@ -24,6 +24,7 @@ android {
         def localPropsFile = rootProject.file("local.properties")
         if (localPropsFile.exists()) localProps.load(localPropsFile.newDataInputStream())
         buildConfigField "String", "CLAUDE_API_KEY", "\"${localProps.getProperty('CLAUDE_API_KEY', '')}\""
+        buildConfigField "boolean", "DEMO_MODE", localProps.getProperty('DEMO_MODE', 'false')
     }
 
     buildTypes {

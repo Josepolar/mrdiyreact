@@ -6,6 +6,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
@@ -64,6 +65,14 @@ class AuthManager(private val context: Context) {
 
     fun saveLoginState(isLoggedIn: Boolean) {
         prefs.edit().putBoolean(KEY_IS_LOGGED_IN, isLoggedIn).apply()
+    }
+
+    fun enableDemoSession() {
+        prefs.edit()
+            .putBoolean(KEY_IS_LOGGED_IN, true)
+            .putString(KEY_USER_ID, "debug-demo-user")
+            .putString(KEY_USER_NAME, "Demo User")
+            .apply()
     }
 
     fun logout() {
@@ -125,9 +134,24 @@ class AuthManager(private val context: Context) {
     }
 
     fun signInWithGoogle(callback: (Boolean, String) -> Unit) {
-        // Google sign-in requires OAuth configuration (client ID, etc.)
-        // Stub for now - shows "Not available" to user
-        callback(false, "Google sign-in is not configured. Please use email/password login.")
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                client.auth.signInWith(Google)
+                callback(true, "Opening Google sign-in...")
+            } catch (e: Exception) {
+                callback(false, "Google sign-in failed: ${e.message}")
+            }
+        }
+    }
+
+    fun saveCurrentSupabaseUser(): Boolean {
+        val user = client.auth.currentUserOrNull() ?: return false
+        prefs.edit()
+            .putString(KEY_USER_ID, user.id)
+            .putString(KEY_USER_NAME, user.email ?: "Google User")
+            .putBoolean(KEY_IS_LOGGED_IN, true)
+            .apply()
+        return true
     }
 
     fun resetPassword(email: String, callback: (Boolean, String) -> Unit) {

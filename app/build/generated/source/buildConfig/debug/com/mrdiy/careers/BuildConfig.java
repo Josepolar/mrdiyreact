@@ -11,4 +11,6 @@ public final class BuildConfig {
   public static final String VERSION_NAME = "1.0";
   // Field from default config.
   public static final String CLAUDE_API_KEY = "";
+  // Field from default config.
+  public static final boolean DEMO_MODE = false;
 }

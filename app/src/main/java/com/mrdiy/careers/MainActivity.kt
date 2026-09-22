@@ -10,9 +10,11 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import androidx.navigation.ui.setupWithNavController
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.handleDeeplinks
+import com.mrdiy.careers.data.auth.AuthManager
 import com.mrdiy.careers.data.auth.SupabaseProvider
 import com.mrdiy.careers.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
@@ -20,6 +22,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: androidx.navigation.NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +39,14 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
+
+        if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE && navController.currentDestination?.id == R.id.loginFragment) {
+            AuthManager(this).enableDemoSession()
+            navController.navigate(R.id.homeFragment, null, navOptions {
+                popUpTo(R.id.loginFragment) { inclusive = true }
+            })
+        }
 
         binding.bottomNavigation.setupWithNavController(navController)
 
@@ -67,6 +77,13 @@ class MainActivity : AppCompatActivity() {
                 try {
                     SupabaseProvider.client.handleDeeplinks(intent)
                     SupabaseProvider.client.auth.refreshCurrentSession()
+                    if (AuthManager(this@MainActivity).saveCurrentSupabaseUser() &&
+                        navController.currentDestination?.id == R.id.loginFragment
+                    ) {
+                        navController.navigate(R.id.homeFragment, null, navOptions {
+                            popUpTo(R.id.loginFragment) { inclusive = true }
+                        })
+                    }
                 } catch (_: Exception) { }
             }
         }

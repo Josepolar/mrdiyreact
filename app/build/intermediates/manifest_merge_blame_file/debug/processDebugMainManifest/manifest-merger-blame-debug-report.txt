@@ -12,215 +12,214 @@
 9-->INJECTED
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:5:5-67
-11-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:5:22-64
+11-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:5:5-67
+11-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:5:22-64
 12    <uses-permission
-12-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:6:5-7:38
+12-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:6:5-7:38
 13        android:name="android.permission.READ_EXTERNAL_STORAGE"
-13-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:6:22-77
+13-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:6:22-77
 14        android:maxSdkVersion="32" />
-14-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:7:9-35
+14-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:7:9-35
 15    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-15-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:8:5-76
-15-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:8:22-73
+15-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:8:5-76
+15-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:8:22-73
 16
 17    <permission
-17-->[androidx.core:core:1.12.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
+17-->[androidx.core:core:1.12.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
 18        android:name="com.mrdiy.careers.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-18-->[androidx.core:core:1.12.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
+18-->[androidx.core:core:1.12.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
 19        android:protectionLevel="signature" />
-19-->[androidx.core:core:1.12.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
+19-->[androidx.core:core:1.12.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
 20
 21    <uses-permission android:name="com.mrdiy.careers.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-21-->[androidx.core:core:1.12.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
-21-->[androidx.core:core:1.12.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
+21-->[androidx.core:core:1.12.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
+21-->[androidx.core:core:1.12.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
 22
 23    <application
-23-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:10:5-65:19
+23-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:10:5-65:19
 24        android:allowBackup="true"
-24-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:11:9-35
+24-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:11:9-35
 25        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-25-->[androidx.core:core:1.12.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
+25-->[androidx.core:core:1.12.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\0ec42dfea071308f30fbce07fabd4074\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
 26        android:debuggable="true"
 27        android:extractNativeLibs="false"
 27-->INJECTED
 28        android:icon="@mipmap/ic_launcher"
-28-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:12:9-43
+28-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:12:9-43
 29        android:label="@string/app_name"
-29-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:13:9-41
+29-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:13:9-41
 30        android:roundIcon="@mipmap/ic_launcher_round"
-30-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:14:9-54
+30-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:14:9-54
 31        android:supportsRtl="true"
-31-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:15:9-35
-32        android:testOnly="true"
-33        android:theme="@style/Theme.MrDIYCareers" >
-33-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:16:9-50
-34        <activity
-34-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:18:9-63:20
-35            android:name="com.mrdiy.careers.MainActivity"
-35-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:19:13-41
-36            android:exported="true"
-36-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:20:13-36
-37            android:launchMode="singleTask"
-37-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:21:13-44
-38            android:windowSoftInputMode="adjustResize" >
-38-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:22:13-55
-39
-40            <!-- Launcher -->
-41            <intent-filter>
-41-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:25:13-28:29
-42                <action android:name="android.intent.action.MAIN" />
-42-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:26:17-69
-42-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:26:25-66
-43
-44                <category android:name="android.intent.category.LAUNCHER" />
-44-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:27:17-77
-44-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:27:27-74
-45            </intent-filter>
-46
-47            <!--
-48                FIX #11 — Deep-link intent-filter for email-verification callback.
-49
-50                WHY THIS IS NEEDED:
-51                  Supabase sends the user a verification email containing a link
-52                  like:
-53                    https://sfjpiyevasnmvddgtofz.supabase.co/auth/v1/verify?token=…
-54                      &redirect_to=mrdiy://login-callback
-55
-56                  When the user taps that link, Supabase redirects to
-57                  "mrdiy://login-callback?access_token=…&refresh_token=…".
-58                  Without this intent-filter, Android cannot route that URL to
-59                  the app and the verification silently fails.
-60
-61                ALSO REQUIRED in your Supabase dashboard:
-62                  Authentication → URL Configuration → Redirect URLs
-63                  Add: mrdiy://login-callback
-64
-65                  Authentication → URL Configuration → Site URL
-66                  Set: mrdiy://login-callback
-67
-68                  (The scheme "mrdiy" and host "login-callback" match the values
-69                  configured in SupabaseProvider.install(Auth) { scheme/host }.)
-70            -->
-71            <intent-filter android:autoVerify="false" >
-71-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:54:13-61:29
-71-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:54:28-54
-72                <action android:name="android.intent.action.VIEW" />
-72-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:55:17-69
-72-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:55:25-66
-73
-74                <category android:name="android.intent.category.DEFAULT" />
-74-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:56:17-76
-74-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:56:27-73
-75                <category android:name="android.intent.category.BROWSABLE" />
-75-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:57:17-78
-75-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:57:27-75
-76
-77                <data
-77-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:58:17-60:53
-78                    android:host="login-callback"
-78-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:60:21-50
-79                    android:scheme="mrdiy" />
-79-->C:\Users\My PC\Downloads\MrDIYCareers_AndroidStudio\mrdiy_careers\app\src\main\AndroidManifest.xml:59:21-43
-80            </intent-filter>
-81        </activity>
-82
-83        <provider
-83-->[androidx.emoji2:emoji2:1.3.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-84            android:name="androidx.startup.InitializationProvider"
-84-->[androidx.emoji2:emoji2:1.3.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
-85            android:authorities="com.mrdiy.careers.androidx-startup"
-85-->[androidx.emoji2:emoji2:1.3.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
-86            android:exported="false" >
-86-->[androidx.emoji2:emoji2:1.3.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
-87            <meta-data
-87-->[androidx.emoji2:emoji2:1.3.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
-88                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-88-->[androidx.emoji2:emoji2:1.3.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
-89                android:value="androidx.startup" />
-89-->[androidx.emoji2:emoji2:1.3.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
-90            <meta-data
-90-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\ec03ef5b736f8c6ae2f609eb78a6f92d\transformed\storage-kt-debug\AndroidManifest.xml:14:13-16:52
-91                android:name="io.github.jan.supabase.storage.SupabaseInitializer"
-91-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\ec03ef5b736f8c6ae2f609eb78a6f92d\transformed\storage-kt-debug\AndroidManifest.xml:15:17-82
-92                android:value="androidx.startup" />
-92-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\ec03ef5b736f8c6ae2f609eb78a6f92d\transformed\storage-kt-debug\AndroidManifest.xml:16:17-49
-93            <meta-data
-93-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\e0f4e75c76b8481e6d9f15a022ef5699\transformed\auth-kt-debug\AndroidManifest.xml:14:13-16:52
-94                android:name="io.github.jan.supabase.auth.SupabaseInitializer"
-94-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\e0f4e75c76b8481e6d9f15a022ef5699\transformed\auth-kt-debug\AndroidManifest.xml:15:17-79
-95                android:value="androidx.startup" />
-95-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\e0f4e75c76b8481e6d9f15a022ef5699\transformed\auth-kt-debug\AndroidManifest.xml:16:17-49
-96            <meta-data
-96-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\My PC\.gradle\caches\9.4.1\transforms\11e3e78a7724a423a2043afc13b77f49\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
-97                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-97-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\My PC\.gradle\caches\9.4.1\transforms\11e3e78a7724a423a2043afc13b77f49\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
-98                android:value="androidx.startup" />
-98-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\My PC\.gradle\caches\9.4.1\transforms\11e3e78a7724a423a2043afc13b77f49\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
-99            <meta-data
-99-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.2.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\780c2aeb0e2e022861ce2e0bcf79fb5a\transformed\multiplatform-settings-no-arg-debug\AndroidManifest.xml:29:13-31:52
-100                android:name="com.russhwolf.settings.SettingsInitializer"
-100-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.2.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\780c2aeb0e2e022861ce2e0bcf79fb5a\transformed\multiplatform-settings-no-arg-debug\AndroidManifest.xml:30:17-74
-101                android:value="androidx.startup" />
-101-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.2.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\780c2aeb0e2e022861ce2e0bcf79fb5a\transformed\multiplatform-settings-no-arg-debug\AndroidManifest.xml:31:17-49
-102            <meta-data
-102-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
-103                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-103-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
-104                android:value="androidx.startup" />
-104-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
-105        </provider>
-106
-107        <uses-library
-107-->[androidx.window:window:1.0.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:25:9-27:40
-108            android:name="androidx.window.extensions"
-108-->[androidx.window:window:1.0.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:26:13-54
-109            android:required="false" />
-109-->[androidx.window:window:1.0.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:27:13-37
-110        <uses-library
-110-->[androidx.window:window:1.0.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:28:9-30:40
-111            android:name="androidx.window.sidecar"
-111-->[androidx.window:window:1.0.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:29:13-51
-112            android:required="false" />
-112-->[androidx.window:window:1.0.0] C:\Users\My PC\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:30:13-37
-113
-114        <receiver
-114-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
-115            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-115-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
-116            android:directBootAware="false"
-116-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
-117            android:enabled="true"
-117-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
-118            android:exported="true"
-118-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
-119            android:permission="android.permission.DUMP" >
-119-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
-120            <intent-filter>
-120-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
-121                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-121-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-121-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
-122            </intent-filter>
-123            <intent-filter>
-123-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
-124                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-124-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-124-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
-125            </intent-filter>
-126            <intent-filter>
-126-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
-127                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-127-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-127-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
-128            </intent-filter>
-129            <intent-filter>
-129-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
-130                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-130-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-130-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\My PC\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
-131            </intent-filter>
-132        </receiver>
-133    </application>
-134
-135</manifest>
+31-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:15:9-35
+32        android:theme="@style/Theme.MrDIYCareers" >
+32-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:16:9-50
+33        <activity
+33-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:18:9-63:20
+34            android:name="com.mrdiy.careers.MainActivity"
+34-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:19:13-41
+35            android:exported="true"
+35-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:20:13-36
+36            android:launchMode="singleTask"
+36-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:21:13-44
+37            android:windowSoftInputMode="adjustResize" >
+37-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:22:13-55
+38
+39            <!-- Launcher -->
+40            <intent-filter>
+40-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:25:13-28:29
+41                <action android:name="android.intent.action.MAIN" />
+41-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:26:17-69
+41-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:26:25-66
+42
+43                <category android:name="android.intent.category.LAUNCHER" />
+43-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:27:17-77
+43-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:27:27-74
+44            </intent-filter>
+45
+46            <!--
+47                FIX #11 — Deep-link intent-filter for email-verification callback.
+48
+49                WHY THIS IS NEEDED:
+50                  Supabase sends the user a verification email containing a link
+51                  like:
+52                    https://sfjpiyevasnmvddgtofz.supabase.co/auth/v1/verify?token=…
+53                      &redirect_to=mrdiy://login-callback
+54
+55                  When the user taps that link, Supabase redirects to
+56                  "mrdiy://login-callback?access_token=…&refresh_token=…".
+57                  Without this intent-filter, Android cannot route that URL to
+58                  the app and the verification silently fails.
+59
+60                ALSO REQUIRED in your Supabase dashboard:
+61                  Authentication → URL Configuration → Redirect URLs
+62                  Add: mrdiy://login-callback
+63
+64                  Authentication → URL Configuration → Site URL
+65                  Set: mrdiy://login-callback
+66
+67                  (The scheme "mrdiy" and host "login-callback" match the values
+68                  configured in SupabaseProvider.install(Auth) { scheme/host }.)
+69            -->
+70            <intent-filter android:autoVerify="false" >
+70-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:54:13-61:29
+70-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:54:28-54
+71                <action android:name="android.intent.action.VIEW" />
+71-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:55:17-69
+71-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:55:25-66
+72
+73                <category android:name="android.intent.category.DEFAULT" />
+73-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:56:17-76
+73-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:56:27-73
+74                <category android:name="android.intent.category.BROWSABLE" />
+74-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:57:17-78
+74-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:57:27-75
+75
+76                <data
+76-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:58:17-60:53
+77                    android:host="login-callback"
+77-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:60:21-50
+78                    android:scheme="mrdiy" />
+78-->C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:59:21-43
+79            </intent-filter>
+80        </activity>
+81
+82        <provider
+82-->[androidx.emoji2:emoji2:1.3.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+83            android:name="androidx.startup.InitializationProvider"
+83-->[androidx.emoji2:emoji2:1.3.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+84            android:authorities="com.mrdiy.careers.androidx-startup"
+84-->[androidx.emoji2:emoji2:1.3.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+85            android:exported="false" >
+85-->[androidx.emoji2:emoji2:1.3.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+86            <meta-data
+86-->[androidx.emoji2:emoji2:1.3.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+87                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+87-->[androidx.emoji2:emoji2:1.3.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+88                android:value="androidx.startup" />
+88-->[androidx.emoji2:emoji2:1.3.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\9cdb49b07288b2e2544af96da1b5e832\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+89            <meta-data
+89-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\ec03ef5b736f8c6ae2f609eb78a6f92d\transformed\storage-kt-debug\AndroidManifest.xml:14:13-16:52
+90                android:name="io.github.jan.supabase.storage.SupabaseInitializer"
+90-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\ec03ef5b736f8c6ae2f609eb78a6f92d\transformed\storage-kt-debug\AndroidManifest.xml:15:17-82
+91                android:value="androidx.startup" />
+91-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\ec03ef5b736f8c6ae2f609eb78a6f92d\transformed\storage-kt-debug\AndroidManifest.xml:16:17-49
+92            <meta-data
+92-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\e0f4e75c76b8481e6d9f15a022ef5699\transformed\auth-kt-debug\AndroidManifest.xml:14:13-16:52
+93                android:name="io.github.jan.supabase.auth.SupabaseInitializer"
+93-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\e0f4e75c76b8481e6d9f15a022ef5699\transformed\auth-kt-debug\AndroidManifest.xml:15:17-79
+94                android:value="androidx.startup" />
+94-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\e0f4e75c76b8481e6d9f15a022ef5699\transformed\auth-kt-debug\AndroidManifest.xml:16:17-49
+95            <meta-data
+95-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\HP\.gradle\caches\9.4.1\transforms\11e3e78a7724a423a2043afc13b77f49\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
+96                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+96-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\HP\.gradle\caches\9.4.1\transforms\11e3e78a7724a423a2043afc13b77f49\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
+97                android:value="androidx.startup" />
+97-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\HP\.gradle\caches\9.4.1\transforms\11e3e78a7724a423a2043afc13b77f49\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
+98            <meta-data
+98-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.2.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\780c2aeb0e2e022861ce2e0bcf79fb5a\transformed\multiplatform-settings-no-arg-debug\AndroidManifest.xml:29:13-31:52
+99                android:name="com.russhwolf.settings.SettingsInitializer"
+99-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.2.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\780c2aeb0e2e022861ce2e0bcf79fb5a\transformed\multiplatform-settings-no-arg-debug\AndroidManifest.xml:30:17-74
+100                android:value="androidx.startup" />
+100-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.2.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\780c2aeb0e2e022861ce2e0bcf79fb5a\transformed\multiplatform-settings-no-arg-debug\AndroidManifest.xml:31:17-49
+101            <meta-data
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+102                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+102-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+103                android:value="androidx.startup" />
+103-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+104        </provider>
+105
+106        <uses-library
+106-->[androidx.window:window:1.0.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:25:9-27:40
+107            android:name="androidx.window.extensions"
+107-->[androidx.window:window:1.0.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:26:13-54
+108            android:required="false" />
+108-->[androidx.window:window:1.0.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:27:13-37
+109        <uses-library
+109-->[androidx.window:window:1.0.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:28:9-30:40
+110            android:name="androidx.window.sidecar"
+110-->[androidx.window:window:1.0.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:29:13-51
+111            android:required="false" />
+111-->[androidx.window:window:1.0.0] C:\Users\HP\.gradle\caches\9.4.1\transforms\52df14fbea260d5ad78f0f11effc5673\transformed\window-1.0.0\AndroidManifest.xml:30:13-37
+112
+113        <receiver
+113-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+114            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+114-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+115            android:directBootAware="false"
+115-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+116            android:enabled="true"
+116-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+117            android:exported="true"
+117-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+118            android:permission="android.permission.DUMP" >
+118-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+119            <intent-filter>
+119-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+120                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+120-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+120-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+121            </intent-filter>
+122            <intent-filter>
+122-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+123                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+123-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+123-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+124            </intent-filter>
+125            <intent-filter>
+125-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+126                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+126-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+126-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+127            </intent-filter>
+128            <intent-filter>
+128-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+129                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+129-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+129-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\HP\.gradle\caches\9.4.1\transforms\a32647f9a39c4376f77b0fec171db389\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+130            </intent-filter>
+131        </receiver>
+132    </application>
+133
+134</manifest>

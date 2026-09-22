@@ -62,6 +62,7 @@ private fun checkProfileAndNavigate() {
         // 2️⃣ Supabase fallback – if profile exists with real data, save to cache and go Home
         val repo = ProfileRepository(requireContext())
         repo.loadProfile(userId) { profile ->
+            if (!isAdded || view == null) return@loadProfile
             if (profile != null && profile.fullName.isNotBlank()) {
                 navigateToHome()
             } else {
@@ -158,6 +159,7 @@ binding.cardPhone.setOnClickListener {
     }
 
     private fun navigateToHome() {
+        if (!isAdded || view == null) return
         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
     }
 
