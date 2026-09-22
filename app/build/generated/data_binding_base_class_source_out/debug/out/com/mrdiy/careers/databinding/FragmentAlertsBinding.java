@@ -24,12 +24,17 @@ public final class FragmentAlertsBinding implements ViewBinding {
   public final RecyclerView alertsRecycler;
 
   @NonNull
+  public final TextView tvEmptyAlerts;
+
+  @NonNull
   public final TextView tvUnreadCount;
 
   private FragmentAlertsBinding(@NonNull LinearLayout rootView,
-      @NonNull RecyclerView alertsRecycler, @NonNull TextView tvUnreadCount) {
+      @NonNull RecyclerView alertsRecycler, @NonNull TextView tvEmptyAlerts,
+      @NonNull TextView tvUnreadCount) {
     this.rootView = rootView;
     this.alertsRecycler = alertsRecycler;
+    this.tvEmptyAlerts = tvEmptyAlerts;
     this.tvUnreadCount = tvUnreadCount;
   }
 
@@ -66,13 +71,20 @@ public final class FragmentAlertsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tv_empty_alerts;
+      TextView tvEmptyAlerts = ViewBindings.findChildViewById(rootView, id);
+      if (tvEmptyAlerts == null) {
+        break missingId;
+      }
+
       id = R.id.tv_unread_count;
       TextView tvUnreadCount = ViewBindings.findChildViewById(rootView, id);
       if (tvUnreadCount == null) {
         break missingId;
       }
 
-      return new FragmentAlertsBinding((LinearLayout) rootView, alertsRecycler, tvUnreadCount);
+      return new FragmentAlertsBinding((LinearLayout) rootView, alertsRecycler, tvEmptyAlerts,
+          tvUnreadCount);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

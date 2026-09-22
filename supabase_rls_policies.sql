@@ -149,3 +149,29 @@ CREATE POLICY "Users can submit own applications"
     WITH CHECK (auth.uid()::text = user_id);
 
 GRANT SELECT, INSERT ON public.job_applications TO authenticated;
+
+-- ========================================================================
+-- 7. ALERTS AND MESSAGES
+-- ========================================================================
+
+CREATE TABLE IF NOT EXISTS public.alerts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id TEXT NOT NULL,
+    type TEXT NOT NULL DEFAULT 'JOB_MATCH', title TEXT NOT NULL, message TEXT NOT NULL,
+    time_ago TEXT NOT NULL DEFAULT 'Just now', is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    job_id TEXT
+);
+CREATE TABLE IF NOT EXISTS public.messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id TEXT NOT NULL,
+    sender_name TEXT NOT NULL, sender_avatar TEXT NOT NULL DEFAULT 'HR',
+    last_message TEXT NOT NULL, time_ago TEXT NOT NULL DEFAULT 'Just now',
+    is_read BOOLEAN NOT NULL DEFAULT FALSE, unread_count INTEGER NOT NULL DEFAULT 0,
+    job_id TEXT
+);
+
+ALTER TABLE public.alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can read own alerts" ON public.alerts;
+CREATE POLICY "Users can read own alerts" ON public.alerts FOR SELECT USING (auth.uid()::text = user_id);
+DROP POLICY IF EXISTS "Users can read own messages" ON public.messages;
+CREATE POLICY "Users can read own messages" ON public.messages FOR SELECT USING (auth.uid()::text = user_id);
+GRANT SELECT ON public.alerts, public.messages TO authenticated;

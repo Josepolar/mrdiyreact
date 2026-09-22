@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mrdiy.careers.MainActivity
 import com.mrdiy.careers.databinding.FragmentAlertsBinding
 import com.mrdiy.careers.ui.base.BaseFragment
+import com.mrdiy.careers.data.repository.InboxRepository
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class AlertsFragment : BaseFragment() {
 
@@ -24,6 +27,14 @@ class AlertsFragment : BaseFragment() {
         (requireActivity() as MainActivity).markAlertsRead()
 
         binding.tvUnreadCount.text = ""
+        viewLifecycleOwner.lifecycleScope.launch {
+            InboxRepository(requireContext()).alerts().onSuccess { alerts ->
+                binding.alertsRecycler.visibility = if (alerts.isEmpty()) View.GONE else View.VISIBLE
+                binding.alertsRecycler.layoutManager = LinearLayoutManager(requireContext())
+                binding.alertsRecycler.adapter = AlertAdapter { }
+                (binding.alertsRecycler.adapter as AlertAdapter).submitList(alerts)
+            }
+        }
     }
 
     override fun onDestroyView() {

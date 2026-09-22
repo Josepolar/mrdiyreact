@@ -96,11 +96,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnApplications.setOnClickListener {
-            Toast.makeText(
-                requireContext(),
-                "Applications are unavailable because no applications backend is configured.",
-                Toast.LENGTH_LONG
-            ).show()
+            findNavController().navigate(R.id.applicationsFragment)
         }
     }
 

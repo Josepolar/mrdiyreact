@@ -7,7 +7,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.mrdiy.careers.data.repository.PhpJobRepository
+import com.mrdiy.careers.data.repository.JobRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
+import com.mrdiy.careers.data.repository.ProfileRepository
+import com.mrdiy.careers.data.ml.HybridMatchingService
 import com.mrdiy.careers.model.Job
 import kotlinx.coroutines.Job as KJob
 import kotlinx.coroutines.delay
@@ -17,8 +20,10 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
 
     private val savedJobsRepository = SavedJobsRepository(application)
     private val phpJobRepository = PhpJobRepository()
+    private val profileRepository = ProfileRepository(application)
 
     private var allJobs: List<Job> = emptyList()
+    private val fallbackJobs = JobRepository.getJobs()
 
     private val _filteredJobs = MutableLiveData<List<Job>>()
     val filteredJobs: LiveData<List<Job>> get() = _filteredJobs
@@ -40,6 +45,7 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
     private var currentLocationFilter: String? = null
 
     private var autoRefreshJob: KJob? = null
+    private var searchJob: KJob? = null
 
     init {
         _filteredJobs.value = emptyList()
@@ -60,14 +66,15 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
             phpJobRepository.fetchOpenJobs()
                 .onSuccess { apiJobs ->
                     Log.d("RecommendedJobsVM", "API returned ${apiJobs.size} jobs")
-                    allJobs = apiJobs
+                    allJobs = rankJobs(apiJobs.ifEmpty { fallbackJobs })
                     _isLoading.value = false
                     applyFilters()
                 }
                 .onFailure { e ->
                     Log.e("RecommendedJobsVM", "API failed: ${e.message}")
                     _isLoading.value = false
-                    _errorMessage.value = "Could not load jobs: ${e.message}"
+                    allJobs = rankJobs(fallbackJobs)
+                    _errorMessage.value = "Live recommendations are unavailable. Showing available jobs instead."
                     applyFilters()
                 }
         }
@@ -80,7 +87,7 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
                 delay(60_000)
                 phpJobRepository.fetchOpenJobs()
                     .onSuccess { apiJobs ->
-                        allJobs = apiJobs
+                        allJobs = rankJobs(apiJobs.ifEmpty { fallbackJobs })
                         applyFilters()
                         loadSavedJobIds()
                     }
@@ -98,7 +105,11 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
 
     fun onSearchQuery(query: String?) {
         currentSearchQuery = query
-        applyFilters()
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(250)
+            applyFilters()
+        }
     }
 
     fun onJobTypeFilter(jobType: String?) {
@@ -141,6 +152,15 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
 
     fun getSavedCount(): Int = _savedCount.value ?: 0
 
+    private fun rankJobs(jobs: List<Job>): List<Job> {
+        val profile = profileRepository.loadFromPrefs()
+        if (profile.skills.isEmpty() && profile.about.isBlank() && profile.desiredPosition.isBlank()) {
+            return jobs
+        }
+        return HybridMatchingService.matchJobsToProfile(profile, jobs)
+            .map { it.job }
+    }
+
     private fun applyFilters() {
         var filtered = allJobs
 
@@ -170,5 +190,6 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
     override fun onCleared() {
         super.onCleared()
         autoRefreshJob?.cancel()
+        searchJob?.cancel()
     }
 }

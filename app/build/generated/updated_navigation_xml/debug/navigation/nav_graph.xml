@@ -183,6 +183,10 @@ app:startDestination="@id/loginFragment" >
 
 </fragment>
 <fragment
+    android:id="@+id/applicationsFragment"
+    android:name="com.mrdiy.careers.ui.applications.ApplicationsFragment"
+    android:label="Applications" />
+<fragment
     android:id="@+id/jobDetailFragment"
     android:name="com.mrdiy.careers.ui.jobs.JobDetailFragment"
     android:label="Job Detail" >

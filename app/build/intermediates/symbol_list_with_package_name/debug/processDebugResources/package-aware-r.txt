@@ -3331,6 +3331,8 @@ id animateToStart
 id antiClockwise
 id anticipate
 id app_bar
+id applicationsFragment
+id applications_list
 id arc
 id asConfigured
 id async
@@ -3766,6 +3768,7 @@ id profile_progress_bar
 id progressBar
 id progressBarOtp
 id progressGroup
+id progress_bar
 id progress_circular
 id progress_horizontal
 id radio
@@ -3962,7 +3965,10 @@ id tv_avatar_initials_edit
 id tv_bullet_text
 id tv_company_branch
 id tv_company_initial
+id tv_date
 id tv_email
+id tv_empty
+id tv_empty_alerts
 id tv_empty_state
 id tv_error_message
 id tv_exp_company
@@ -3995,7 +4001,9 @@ id tv_stat_applied
 id tv_stat_interviews
 id tv_stat_profile
 id tv_stat_saved
+id tv_status
 id tv_time_ago
+id tv_title
 id tv_unread_count
 id tv_user_name
 id unchecked
@@ -4163,6 +4171,7 @@ layout design_text_input_start_icon
 layout dialog_add_experience
 layout dialog_forgot_password
 layout fragment_alerts
+layout fragment_applications
 layout fragment_edit_profile
 layout fragment_email_verification
 layout fragment_home
@@ -4181,6 +4190,7 @@ layout fragment_welcome
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_alert
+layout item_application
 layout item_bullet_point
 layout item_experience_row
 layout item_job_card
