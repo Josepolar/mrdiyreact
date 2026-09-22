@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mrdiy.careers.R
+import com.mrdiy.careers.BuildConfig
 import com.mrdiy.careers.data.auth.AuthManager
 import com.mrdiy.careers.databinding.FragmentRegisterBinding
 
@@ -78,6 +79,13 @@ class RegisterFragment : Fragment() {
             binding.btnRegister.isEnabled = true
 
             if (success) {
+                if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE) {
+                    // The signup has already created the account in Supabase.
+                    // Local demo mode skips the email gate for UI exploration only.
+                    authManager.enableDemoSession()
+                    findNavController().navigate(R.id.action_registerFragment_to_welcomeFragment)
+                    return@register
+                }
                 // ── Navigate to the email verification screen ──────────────────
                 // Safe Args: pass the email so the screen can display it and
                 // use it for the "Resend" button.

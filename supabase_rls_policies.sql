@@ -115,3 +115,37 @@ SELECT policyname, cmd FROM pg_policies
 WHERE tablename = 'objects' AND schemaname = 'storage';
 
 SELECT id, name, public FROM storage.buckets WHERE id = 'resumes';
+
+-- ========================================================================
+-- 6. JOB APPLICATIONS
+-- ========================================================================
+
+CREATE TABLE IF NOT EXISTS public.job_applications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL,
+    job_id TEXT NOT NULL,
+    job_title TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'submitted',
+    applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (user_id, job_id)
+);
+
+-- Existing installations may have created these IDs as UUIDs. The Android
+-- job API uses string IDs, so normalize both columns before applying RLS.
+ALTER TABLE public.job_applications
+    ALTER COLUMN user_id TYPE TEXT USING user_id::text,
+    ALTER COLUMN job_id TYPE TEXT USING job_id::text;
+
+ALTER TABLE public.job_applications ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view own applications" ON public.job_applications;
+CREATE POLICY "Users can view own applications"
+    ON public.job_applications FOR SELECT
+    USING (auth.uid()::text = user_id);
+
+DROP POLICY IF EXISTS "Users can submit own applications" ON public.job_applications;
+CREATE POLICY "Users can submit own applications"
+    ON public.job_applications FOR INSERT
+    WITH CHECK (auth.uid()::text = user_id);
+
+GRANT SELECT, INSERT ON public.job_applications TO authenticated;

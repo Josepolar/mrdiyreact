@@ -2,6 +2,7 @@ package com.mrdiy.careers.data.repository
 
 import android.content.Context
 import android.util.Log
+import com.mrdiy.careers.BuildConfig
 import com.mrdiy.careers.data.auth.SupabaseProvider
 import com.mrdiy.careers.model.UserProfile
 import io.github.jan.supabase.postgrest.from
@@ -139,6 +140,11 @@ class ProfileRepository(private val context: Context) {
         }
 
         saveLocally(uid, profile)
+
+        if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE && uid == "debug-demo-user") {
+            onComplete?.invoke(true)
+            return
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {

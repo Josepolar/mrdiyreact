@@ -3,6 +3,7 @@ package com.mrdiy.careers.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import androidx.lifecycle.lifecycleScope
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,7 +65,7 @@ class EmailVerificationFragment : Fragment() {
         binding.progressBar.isVisible = true
         binding.btnRefreshStatus.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val auth = SupabaseProvider.client.auth
                 auth.refreshCurrentSession()
@@ -77,24 +78,28 @@ class EmailVerificationFragment : Fragment() {
                     if (emailConfirmed) {
                         isEmailVerified = true
                         withContext(Dispatchers.Main) {
+                            if (!isAdded || _binding == null) return@withContext
                             binding.progressBar.isVisible = false
                             Toast.makeText(requireContext(), "Email verified! Redirecting...", Toast.LENGTH_SHORT).show()
                             navigateToLogin()
                         }
                     } else {
                         withContext(Dispatchers.Main) {
+                            if (!isAdded || _binding == null) return@withContext
                             binding.progressBar.isVisible = false
                             binding.btnRefreshStatus.isEnabled = true
                         }
                     }
                 } else {
                     withContext(Dispatchers.Main) {
+                        if (!isAdded || _binding == null) return@withContext
                         binding.progressBar.isVisible = false
                         binding.btnRefreshStatus.isEnabled = true
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    if (!isAdded || _binding == null) return@withContext
                     binding.progressBar.isVisible = false
                     binding.btnRefreshStatus.isEnabled = true
                 }
@@ -138,11 +143,12 @@ class EmailVerificationFragment : Fragment() {
 
         binding.tvResend.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 SupabaseProvider.client.auth.resendEmail(OtpType.Email.SIGNUP, email)
 
                 withContext(Dispatchers.Main) {
+                    if (!isAdded || _binding == null) return@withContext
                     Toast.makeText(
                         requireContext(),
                         "Verification email resent to $email",
@@ -152,6 +158,7 @@ class EmailVerificationFragment : Fragment() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    if (!isAdded || _binding == null) return@withContext
                     Toast.makeText(
                         requireContext(),
                         "Could not resend - please wait a moment and try again.",

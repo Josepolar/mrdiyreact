@@ -43,26 +43,34 @@ class PhoneLoginFragment : Fragment() {
         binding.btnSendOtp.setOnClickListener {
             val phone = binding.etPhone.text?.trim().toString()
             if (validatePhone(phone)) {
-                // Demo: just show message
-                Toast.makeText(requireContext(), "OTP sent to +63$phone (demo)", Toast.LENGTH_SHORT).show()
-                binding.otpSection.isVisible = true
+                val normalized = if (phone.startsWith("+")) phone else "+63$phone"
                 binding.btnSendOtp.isEnabled = false
+                authManager.requestPhoneOtp(normalized) { success, message ->
+                    binding.btnSendOtp.isEnabled = true
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    if (success) binding.otpSection.isVisible = true
+                }
             }
         }
 
         binding.btnVerify.setOnClickListener {
             val otp = binding.etOtp.text?.trim().toString()
             if (otp.length == 6) {
-                Toast.makeText(requireContext(), "Phone verified! (demo)", Toast.LENGTH_SHORT).show()
-                authManager.saveLoginState(true)
-                navigateToHome()
+                val phone = binding.etPhone.text?.trim().toString()
+                val normalized = if (phone.startsWith("+")) phone else "+63$phone"
+                binding.btnVerify.isEnabled = false
+                authManager.verifyPhoneOtp(normalized, otp) { success, message ->
+                    binding.btnVerify.isEnabled = true
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    if (success) navigateToHome()
+                }
             } else {
                 binding.tilOtp.error = "Enter 6-digit code"
             }
         }
 
         binding.tvResend.setOnClickListener {
-            Toast.makeText(requireContext(), "Resend OTP (demo)", Toast.LENGTH_SHORT).show()
+            binding.btnSendOtp.performClick()
         }
     }
 

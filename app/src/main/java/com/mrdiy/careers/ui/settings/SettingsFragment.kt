@@ -1,7 +1,10 @@
 package com.mrdiy.careers.ui.settings
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,23 +45,25 @@ class SettingsFragment : Fragment() {
 
     private fun setupMenuItems() {
         binding.btnChangePassword.setOnClickListener {
-            Toast.makeText(requireContext(), "Change Password feature coming soon!", Toast.LENGTH_SHORT).show()
+            showChangePasswordDialog()
         }
 
         binding.btnNotificationSettings.setOnClickListener {
-            Toast.makeText(requireContext(), "Notification Settings coming soon!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+            })
         }
 
         binding.btnPrivacy.setOnClickListener {
-            Toast.makeText(requireContext(), "Privacy Settings coming soon!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://supabase.com/privacy")))
         }
 
         binding.btnResumeSettings.setOnClickListener {
-            Toast.makeText(requireContext(), "Resume Settings coming soon!", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.resumeUploadFragment)
         }
 
         binding.btnHelp.setOnClickListener {
-            Toast.makeText(requireContext(), "Help and Support coming soon!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:support@mrdiy.com")))
         }
 
         binding.btnAbout.setOnClickListener {
@@ -94,6 +99,32 @@ class SettingsFragment : Fragment() {
             .setTitle("About MR.D.I.Y. Careers")
             .setMessage("Version 1.0.0\n\nMR.D.I.Y. Careers - Job Search App\n\nFind your dream job at MR.D.I.Y. Philippines")
             .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun showChangePasswordDialog() {
+        val input = com.google.android.material.textfield.TextInputEditText(requireContext()).apply {
+            hint = "New password"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+        val container = android.widget.FrameLayout(requireContext()).apply {
+            setPadding(48, 0, 48, 0)
+            addView(input)
+        }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Change password")
+            .setView(container)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Update") { _, _ ->
+                val password = input.text?.toString().orEmpty()
+                if (password.length < 6) {
+                    Toast.makeText(requireContext(), "Password must be at least 6 characters.", Toast.LENGTH_SHORT).show()
+                } else {
+                    authManager.updatePassword(password) { _, message ->
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
             .show()
     }
 

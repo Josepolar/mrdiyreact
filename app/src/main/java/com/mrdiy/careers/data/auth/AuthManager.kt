@@ -7,6 +7,8 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.providers.Google
+import io.github.jan.supabase.auth.providers.builtin.Phone
+import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
@@ -122,7 +124,7 @@ class AuthManager(private val context: Context) {
     fun register(fullName: String, email: String, password: String, callback: (Boolean, String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                client.auth.signUpWith(Email) {
+                client.auth.signUpWith(Email, redirectUrl = "mrdiy://login-callback") {
                     this.email = email
                     this.password = password
                 }
@@ -131,7 +133,7 @@ class AuthManager(private val context: Context) {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    callback(false, "Registration failed. Check your details and try again.")
+                    callback(false, readableRegistrationError(e))
                 }
             }
         }
@@ -144,6 +146,44 @@ class AuthManager(private val context: Context) {
                 callback(true, "Opening Google sign-in...")
             } catch (e: Exception) {
                 callback(false, "Google sign-in could not start. Please try again.")
+            }
+        }
+    }
+
+    fun requestPhoneOtp(phone: String, callback: (Boolean, String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                client.auth.signInWith(Phone) { this.phone = phone }
+                withContext(Dispatchers.Main) { callback(true, "Verification code sent.") }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    callback(false, "Phone sign-in is unavailable. Check the phone provider settings.")
+                }
+            }
+        }
+    }
+
+    fun verifyPhoneOtp(phone: String, token: String, callback: (Boolean, String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                client.auth.verifyPhoneOtp(
+                    type = OtpType.Phone.SMS,
+                    phone = phone,
+                    token = token
+                )
+                val user = client.auth.currentUserOrNull()
+                if (user == null) {
+                    withContext(Dispatchers.Main) { callback(false, "Verification failed. Please request a new code.") }
+                } else {
+                    prefs.edit()
+                        .putString(KEY_USER_ID, user.id)
+                        .putString(KEY_USER_NAME, user.phone ?: phone)
+                        .putBoolean(KEY_IS_LOGGED_IN, true)
+                        .apply()
+                    withContext(Dispatchers.Main) { callback(true, "Phone verified.") }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) { callback(false, "The code is invalid or expired.") }
             }
         }
     }
@@ -173,6 +213,17 @@ class AuthManager(private val context: Context) {
         }
     }
 
+    fun updatePassword(password: String, callback: (Boolean, String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                client.auth.updateUser { this.password = password }
+                withContext(Dispatchers.Main) { callback(true, "Password updated.") }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) { callback(false, "Could not update the password. Please try again.") }
+            }
+        }
+    }
+
     private fun readableAuthError(error: Exception): String {
         val message = error.message.orEmpty().lowercase()
         return when {
@@ -183,6 +234,21 @@ class AuthManager(private val context: Context) {
             "network" in message || "timeout" in message ->
                 "Connection problem. Check your internet and try again."
             else -> "Login failed. Check your details and try again."
+        }
+    }
+
+    private fun readableRegistrationError(error: Exception): String {
+        val message = error.message.orEmpty().lowercase()
+        return when {
+            "already registered" in message || "already exists" in message ->
+                "That email is already registered. Try signing in instead."
+            "rate limit" in message || "too many" in message ->
+                "Too many email attempts. Please wait and try again later."
+            "email" in message && "send" in message ->
+                "Your account was not created because the verification email could not be sent."
+            "network" in message || "timeout" in message ->
+                "Connection problem. Check your internet and try again."
+            else -> "Registration failed. Check your details and try again."
         }
     }
 }

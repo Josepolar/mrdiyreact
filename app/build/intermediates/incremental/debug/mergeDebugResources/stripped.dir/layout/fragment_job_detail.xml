@@ -290,7 +290,6 @@
         android:background="@color/white"
         android:padding="12dp"
         android:elevation="8dp"
-        app:layout_anchor="@id/nav_host_fragment"
         android:layout_gravity="bottom">
 
         <com.google.android.material.button.MaterialButton
@@ -309,6 +308,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
+            android:enabled="false"
             android:text="Apply Now"
             android:textSize="13sp"
             android:textStyle="bold"

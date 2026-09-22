@@ -89,7 +89,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun markAlertsRead()   { /* clear notification badges */ }
-    fun incrementApplied() { /* TODO */ }
-    fun incrementSaved()   { /* TODO */ }
+    fun markAlertsRead() { }
 }

@@ -7,15 +7,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.mrdiy.careers.MainActivity
 import com.mrdiy.careers.R
 import com.mrdiy.careers.data.repository.PhpJobRepository
+import com.mrdiy.careers.data.repository.JobRepository
+import com.mrdiy.careers.data.repository.ApplicationsRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
 import com.mrdiy.careers.databinding.FragmentJobDetailBinding
 import com.mrdiy.careers.model.Job
 import com.mrdiy.careers.ui.base.BaseFragment
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,6 +27,7 @@ class JobDetailFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val phpJobRepository = PhpJobRepository()
+    private var applicationsRepository: ApplicationsRepository? = null
     private var savedJobsRepository: SavedJobsRepository? = null
     private var currentJob: Job? = null
     private var isJobSaved = false
@@ -44,6 +46,7 @@ class JobDetailFragment : BaseFragment() {
 
         try {
             savedJobsRepository = SavedJobsRepository(requireContext())
+            applicationsRepository = ApplicationsRepository(requireContext())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -58,10 +61,11 @@ class JobDetailFragment : BaseFragment() {
 
         showLoading(true)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val result = phpJobRepository.getJobById(jobId)
                 withContext(Dispatchers.Main) {
+                    if (!isAdded || _binding == null) return@withContext
                     showLoading(false)
 
                     result.onSuccess { job ->
@@ -69,17 +73,32 @@ class JobDetailFragment : BaseFragment() {
                         checkIfJobSaved(job.id)
                         displayJob(job)
                     }.onFailure { e ->
-                        Toast.makeText(requireContext(), "Failed to load job: ${e.message}", Toast.LENGTH_SHORT).show()
-                        findNavController().navigateUp()
+                        val fallbackJob = JobRepository.getJobById(jobId)
+                        if (fallbackJob != null) {
+                            currentJob = fallbackJob
+                            checkIfJobSaved(fallbackJob.id)
+                            displayJob(fallbackJob)
+                        } else {
+                            Toast.makeText(requireContext(), "We could not load this job. Please try again.", Toast.LENGTH_SHORT).show()
+                            findNavController().navigateUp()
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    if (!isAdded || _binding == null) return@withContext
                     showLoading(false)
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    try {
-                        findNavController().navigateUp()
-                    } catch (ignored: Exception) {}
+                    val fallbackJob = JobRepository.getJobById(jobId)
+                    if (fallbackJob != null) {
+                        currentJob = fallbackJob
+                        checkIfJobSaved(fallbackJob.id)
+                        displayJob(fallbackJob)
+                    } else {
+                        Toast.makeText(requireContext(), "We could not load this job. Please try again.", Toast.LENGTH_SHORT).show()
+                        try {
+                            findNavController().navigateUp()
+                        } catch (ignored: Exception) {}
+                    }
                 }
             }
         }
@@ -88,8 +107,24 @@ class JobDetailFragment : BaseFragment() {
 
         binding.btnApply.setOnClickListener {
             currentJob?.let { job ->
-                (requireActivity() as MainActivity).incrementApplied()
-                Toast.makeText(requireContext(), "Application submitted for ${job.title}", Toast.LENGTH_SHORT).show()
+                binding.btnApply.isEnabled = false
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    val result = applicationsRepository?.apply(job)
+                        ?: Result.failure(IllegalStateException("Application service unavailable."))
+                    withContext(Dispatchers.Main) {
+                        if (!isAdded || _binding == null) return@withContext
+                        binding.btnApply.isEnabled = true
+                        result.onSuccess {
+                            Toast.makeText(requireContext(), "Application submitted.", Toast.LENGTH_SHORT).show()
+                        }.onFailure { error ->
+                            Toast.makeText(
+                                requireContext(),
+                                error.message ?: "Application failed. Please try again.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
             }
         }
 
@@ -106,10 +141,11 @@ class JobDetailFragment : BaseFragment() {
             updateSaveButtonIcon()
             return
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val saved = savedJobsRepository?.isJobSaved(jobId) ?: false
                 withContext(Dispatchers.Main) {
+                    if (!isAdded || _binding == null) return@withContext
                     isJobSaved = saved
                     updateSaveButtonIcon()
                 }
@@ -124,13 +160,14 @@ class JobDetailFragment : BaseFragment() {
     }
 
     private fun toggleSaveJob(job: Job) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             if (isJobSaved) {
                 savedJobsRepository?.unsaveJob(job.id)
             } else {
                 savedJobsRepository?.saveJob(job)
             }
             withContext(Dispatchers.Main) {
+                if (!isAdded || _binding == null) return@withContext
                 isJobSaved = !isJobSaved
                 updateSaveButtonIcon()
                 val message = if (isJobSaved) "Job saved!" else "Job removed from saved"
@@ -151,6 +188,7 @@ class JobDetailFragment : BaseFragment() {
 
     private fun displayJob(job: Job) {
         try {
+            binding.btnApply.isEnabled = true
             binding.tvJdTitle.text      = job.title
             binding.tvJdCompanyLoc.text = "${job.company} · ${job.branch}, ${job.location}"
 
