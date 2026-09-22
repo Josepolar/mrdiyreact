@@ -43,6 +43,9 @@ public final class ItemJobCardBinding implements ViewBinding {
   public final TextView tvCompanyInitial;
 
   @NonNull
+  public final TextView tvJobReference;
+
+  @NonNull
   public final TextView tvJobTitle;
 
   @NonNull
@@ -54,8 +57,8 @@ public final class ItemJobCardBinding implements ViewBinding {
   private ItemJobCardBinding(@NonNull MaterialCardView rootView, @NonNull ImageButton btnSaveJob,
       @NonNull Chip chipCategory, @NonNull Chip chipJobType, @NonNull Chip chipLocation,
       @NonNull MaterialCardView jobCard, @NonNull TextView tvCompanyBranch,
-      @NonNull TextView tvCompanyInitial, @NonNull TextView tvJobTitle,
-      @NonNull TextView tvPostedTime, @NonNull TextView tvSalary) {
+      @NonNull TextView tvCompanyInitial, @NonNull TextView tvJobReference,
+      @NonNull TextView tvJobTitle, @NonNull TextView tvPostedTime, @NonNull TextView tvSalary) {
     this.rootView = rootView;
     this.btnSaveJob = btnSaveJob;
     this.chipCategory = chipCategory;
@@ -64,6 +67,7 @@ public final class ItemJobCardBinding implements ViewBinding {
     this.jobCard = jobCard;
     this.tvCompanyBranch = tvCompanyBranch;
     this.tvCompanyInitial = tvCompanyInitial;
+    this.tvJobReference = tvJobReference;
     this.tvJobTitle = tvJobTitle;
     this.tvPostedTime = tvPostedTime;
     this.tvSalary = tvSalary;
@@ -134,6 +138,12 @@ public final class ItemJobCardBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tv_job_reference;
+      TextView tvJobReference = ViewBindings.findChildViewById(rootView, id);
+      if (tvJobReference == null) {
+        break missingId;
+      }
+
       id = R.id.tv_job_title;
       TextView tvJobTitle = ViewBindings.findChildViewById(rootView, id);
       if (tvJobTitle == null) {
@@ -153,8 +163,8 @@ public final class ItemJobCardBinding implements ViewBinding {
       }
 
       return new ItemJobCardBinding((MaterialCardView) rootView, btnSaveJob, chipCategory,
-          chipJobType, chipLocation, jobCard, tvCompanyBranch, tvCompanyInitial, tvJobTitle,
-          tvPostedTime, tvSalary);
+          chipJobType, chipLocation, jobCard, tvCompanyBranch, tvCompanyInitial, tvJobReference,
+          tvJobTitle, tvPostedTime, tvSalary);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

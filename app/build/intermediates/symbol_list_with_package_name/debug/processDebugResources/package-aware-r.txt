@@ -3218,6 +3218,7 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable panda_mascot
 drawable test_level_drawable
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
@@ -3980,6 +3981,7 @@ id tv_greeting
 id tv_jd_company_loc
 id tv_jd_title
 id tv_job_count
+id tv_job_reference
 id tv_job_title
 id tv_last_message
 id tv_loading_message

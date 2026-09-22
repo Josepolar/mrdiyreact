@@ -93,6 +93,7 @@ drawable ic_share
 drawable ic_work
 drawable mr_diy_logo
 drawable mr_diy_logo1
+drawable panda_mascot
 id action_alerts_to_jobDetail
 id action_emailVerificationFragment_to_loginFragment
 id action_home_to_jobDetail
@@ -358,6 +359,7 @@ id tv_greeting
 id tv_jd_company_loc
 id tv_jd_title
 id tv_job_count
+id tv_job_reference
 id tv_job_title
 id tv_last_message
 id tv_loading_message

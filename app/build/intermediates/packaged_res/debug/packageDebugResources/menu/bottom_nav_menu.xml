@@ -9,12 +9,12 @@
     <item
         android:id="@+id/recommendedJobsFragment"
         android:icon="@drawable/ic_work"
-        android:title="For You" />
+        android:title="Jobs" />
 
     <item
         android:id="@+id/savedJobsFragment"
         android:icon="@drawable/ic_bookmark_filled"
-        android:title="Saved Jobs" />
+        android:title="Saved" />
 
     <item
         android:id="@+id/profileFragment"
