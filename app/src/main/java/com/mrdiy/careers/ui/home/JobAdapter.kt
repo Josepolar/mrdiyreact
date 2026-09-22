@@ -109,6 +109,7 @@ class JobAdapter(
 
             binding.tvCompanyBranch.text =
                 "${job.company} · ${job.branch}"
+            binding.tvJobReference.text = "REF #${job.id.takeLast(8).uppercase()}"
 
             binding.tvPostedTime.text =
                 job.postedAgo

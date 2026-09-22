@@ -307,7 +307,7 @@ class ProfileRepository(private val context: Context) {
                 withContext(Dispatchers.Main) { onComplete?.invoke(true, null) }
             } catch (e: Exception) {
                 Log.e("ProfileRepo", "saveResumeFields failed: ${e.message}", e)
-                withContext(Dispatchers.Main) { onComplete?.invoke(false, e.message) }
+                withContext(Dispatchers.Main) { onComplete?.invoke(false, "Upload failed, please try again.") }
             }
         }
     }

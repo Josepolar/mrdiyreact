@@ -40,6 +40,8 @@ class LoginFragment : Fragment() {
         }
 
         binding.cardFacebook.visibility = View.GONE
+        binding.etEmail.setOnFocusChangeListener { _, focused -> if (focused) binding.tilEmail.error = null }
+        binding.etPassword.setOnFocusChangeListener { _, focused -> if (focused) binding.tilPassword.error = null }
         setupClickListeners()
     }
 

@@ -43,9 +43,12 @@ class WelcomeFragment : Fragment() {
     }
 
 private fun setupDropdowns() {
-        val experiences = listOf("0", "1", "2", "3", "5", "6", "7", "8", "10+")
+        val experiences = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "10+")
         val expAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, experiences)
         binding.actvExperience.setAdapter(expAdapter)
+        val registeredName = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+            .getString("user_full_name", "").orEmpty()
+        if (registeredName.isNotBlank()) binding.etFullName.setText(registeredName)
     }
 
     private fun getUserIdFromPrefs(): String {

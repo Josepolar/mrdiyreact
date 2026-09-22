@@ -38,7 +38,7 @@ class SavedJobsViewModel(application: Application) : AndroidViewModel(applicatio
                     _uiState.value = SavedJobsUiState.Success(savedJobs)
                 }
             } catch (e: Exception) {
-                _uiState.value = SavedJobsUiState.Error(e.message ?: "Failed to load saved jobs")
+                _uiState.value = SavedJobsUiState.Error("Could not load saved jobs. Please try again.")
             }
         }
     }

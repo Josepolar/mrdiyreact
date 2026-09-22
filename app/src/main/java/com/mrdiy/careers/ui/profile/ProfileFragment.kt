@@ -115,7 +115,7 @@ class ProfileFragment : Fragment() {
                 Toast.makeText(requireContext(), "No app available to view PDF", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Could not open resume: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Could not open resume. Please try again.", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -55,7 +55,7 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
             val rawText = try {
                 resumeRepo.extractTextFromUri(uri)
             } catch (e: Exception) {
-                _state.value = ResumeUploadState.Error("Could not read file: ${e.message}")
+                _state.value = ResumeUploadState.Error("Could not read this resume. Please choose a text-based PDF or .txt file.")
                 return@launch
             }
 
@@ -93,7 +93,7 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
             val resumeUrl = try {
                 uploadResumeToStorage(uri, fileName, userId)
             } catch (e: Exception) {
-                _state.value = ResumeUploadState.Error("Failed to upload resume: ${e.message}")
+                _state.value = ResumeUploadState.Error("Upload failed, please try again.")
                 return@launch
             }
 
@@ -107,7 +107,7 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
             }
 
             if (!saveSuccess) {
-                _state.value = ResumeUploadState.Error(saveError ?: "Failed to save resume info to profile")
+                _state.value = ResumeUploadState.Error("Upload failed, please try again.")
                 return@launch
             }
 

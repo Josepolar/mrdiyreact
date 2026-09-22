@@ -10,6 +10,7 @@ import com.mrdiy.careers.data.repository.PublishedJobsRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
 import com.mrdiy.careers.model.Job
 import com.mrdiy.careers.data.search.UniversalJobSearchEngine
+import com.mrdiy.careers.data.search.MetroManilaScope
 import kotlinx.coroutines.Job as KJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,7 +63,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             publishedJobsRepository.fetchOpenJobs()
                 .onSuccess { apiJobs ->
                     Log.d("HomeViewModel", "API returned ${apiJobs.size} jobs")
-                    allJobs = apiJobs
+                    allJobs = apiJobs.filter(MetroManilaScope::contains)
                     _isLoading.value = false
                     applyFilters()
                 }

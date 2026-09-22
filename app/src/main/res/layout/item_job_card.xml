@@ -69,6 +69,15 @@
                     android:ellipsize="end" />
 
                 <TextView
+                    android:id="@+id/tv_job_reference"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="@color/orange_primary"
+                    android:layout_marginTop="2dp"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/tv_company_branch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

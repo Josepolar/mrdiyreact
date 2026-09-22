@@ -32,6 +32,9 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         authManager = AuthManager(requireContext())
+        binding.etEmail.setOnFocusChangeListener { _, focused -> if (focused) binding.tilEmail.error = null }
+        binding.etPassword.setOnFocusChangeListener { _, focused -> if (focused) binding.tilPassword.error = null }
+        binding.etPhone.setOnFocusChangeListener { _, focused -> if (focused) binding.tilPhone.error = null }
         setupClickListeners()
     }
 
@@ -67,6 +70,7 @@ class RegisterFragment : Fragment() {
         // Store email and phone in auth_prefs so WelcomeFragment can use them
         requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
             .edit()
+            .putString("user_full_name", fullName)
             .putString("user_email", email)
             .putString("user_phone", phone)
             .apply()

@@ -25,7 +25,7 @@
         android:layout_marginTop="38dp"
         android:contentDescription="MR.DIY logo"
         android:scaleType="centerInside"
-        android:src="@drawable/mr_diy_logo"
+        android:src="@drawable/panda_mascot"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

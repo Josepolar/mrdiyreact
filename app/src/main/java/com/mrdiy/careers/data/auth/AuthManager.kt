@@ -61,7 +61,10 @@ class AuthManager(private val context: Context) {
     val isLoggedIn: Boolean get() = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
     val currentUser: String get() = prefs.getString(KEY_USER_NAME,  "") ?: ""
 
-    fun getCurrentUserName(): String = prefs.getString(KEY_USER_NAME, "") ?: ""
+    fun getCurrentUserName(): String = prefs.getString(KEY_USER_NAME, null)
+        ?.takeIf { it.isNotBlank() && !it.contains("@") }
+        ?: prefs.getString("user_full_name", "")
+        ?: ""
 
     fun getCurrentUserId(): String? = prefs.getString(KEY_USER_ID, null)
 

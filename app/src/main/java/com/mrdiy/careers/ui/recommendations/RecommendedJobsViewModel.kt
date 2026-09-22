@@ -10,6 +10,7 @@ import com.mrdiy.careers.data.repository.PublishedJobsRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
 import com.mrdiy.careers.data.repository.ProfileRepository
 import com.mrdiy.careers.data.ml.HybridMatchingService
+import com.mrdiy.careers.data.search.MetroManilaScope
 import com.mrdiy.careers.model.Job
 import kotlinx.coroutines.Job as KJob
 import kotlinx.coroutines.delay
@@ -71,7 +72,7 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
             publishedJobsRepository.fetchOpenJobs()
                 .onSuccess { apiJobs ->
                     Log.d("RecommendedJobsVM", "API returned ${apiJobs.size} jobs")
-                    allJobs = rankJobs(apiJobs)
+                    allJobs = rankJobs(apiJobs.filter(MetroManilaScope::contains))
                     _isLoading.value = false
                     applyFilters()
                 }

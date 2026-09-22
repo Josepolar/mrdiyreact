@@ -45,7 +45,7 @@ class ApplicationsFragment : Fragment() {
                 binding.tvEmpty.visibility = if (applications.isEmpty()) View.VISIBLE else View.GONE
                 binding.applicationsList.adapter = ApplicationsAdapter(applications)
             }.onFailure { error ->
-                Toast.makeText(requireContext(), error.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Could not load applications. Please try again.", Toast.LENGTH_LONG).show()
             }
         }
     }

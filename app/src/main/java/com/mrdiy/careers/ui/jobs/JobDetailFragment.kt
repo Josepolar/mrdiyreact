@@ -98,7 +98,7 @@ class JobDetailFragment : BaseFragment() {
                         }.onFailure { error ->
                             Toast.makeText(
                                 requireContext(),
-                                error.message ?: "Application failed. Please try again.",
+                                "Application failed. Please try again.",
                                 Toast.LENGTH_LONG
                             ).show()
                         }

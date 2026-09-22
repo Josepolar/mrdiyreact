@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.mrdiy.careers.R
 import com.mrdiy.careers.data.auth.AuthManager
+import com.mrdiy.careers.data.repository.ProfileRepository
 import com.mrdiy.careers.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -73,17 +74,10 @@ class HomeFragment : Fragment() {
             java.util.Calendar.getInstance()
                 .get(java.util.Calendar.HOUR_OF_DAY)
 
-        val greeting = when {
-            hour < 12 -> "Good morning,"
-            hour < 17 -> "Good afternoon,"
-            else -> "Good evening,"
-        }
+        binding.tvGreeting.text = "Hello"
 
-        binding.tvGreeting.text = greeting
-
-        val userName =
-            authManager.getCurrentUserName()
-                ?: "Job Seeker"
+        val userName = authManager.getCurrentUserName().trim().takeIf { it.isNotBlank() && !it.contains("@") }
+            ?: "Job Seeker"
 
         binding.tvUserName.text =
             "$userName 👋"
