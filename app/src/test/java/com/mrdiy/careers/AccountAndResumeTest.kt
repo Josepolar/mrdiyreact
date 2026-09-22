@@ -21,6 +21,7 @@ class AccountAndResumeTest {
         assertEquals("Hello", AccountRules.greeting(""))
     }
     @Test fun experienceIncludesFourNineAndTenPlus() {
+        assertEquals(0, AccountRules.experience("0"))
         assertEquals(4, AccountRules.experience("4"))
         assertEquals(9, AccountRules.experience("9"))
         assertEquals(10, AccountRules.experience("10+"))
