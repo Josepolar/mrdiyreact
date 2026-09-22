@@ -164,7 +164,17 @@ class ProfileRepository(private val context: Context) {
                     put("email", JsonPrimitive(profile.email))
                     put("phone", JsonPrimitive(profile.phone))
                 }
-                client.from("profiles").upsert(payload) { onConflict = "user_id" }
+                // Do not require a database-level UNIQUE(user_id) constraint here.
+                // Some existing installations predate that constraint, and PostgREST
+                // rejects ON CONFLICT when the constraint is absent.
+                val existing = client.from("profiles")
+                    .select { filter { eq("user_id", uid) } }
+                    .decodeSingleOrNull<UserProfileRow>()
+                if (existing == null) {
+                    client.from("profiles").insert(payload)
+                } else {
+                    client.from("profiles").update(payload) { filter { eq("user_id", uid) } }
+                }
                 saveLocally(uid, profile)
                 withContext(Dispatchers.Main) { onComplete?.invoke(true) }
             } catch (e: Exception) {
