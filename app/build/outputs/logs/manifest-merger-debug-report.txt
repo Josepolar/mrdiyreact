@@ -163,7 +163,7 @@ MERGED from [androidx.startup:startup-runtime:1.2.0] C:\Users\HP\.gradle\caches\
 	android:icon
 		ADDED from C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:12:9-43
 	android:allowBackup
-		ADDED from C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:11:9-35
+		ADDED from C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:11:9-36
 	android:theme
 		ADDED from C:\xampp\htdocs\lars-dazsma-nextjs\mrdiyreact\app\src\main\AndroidManifest.xml:16:9-50
 activity#com.mrdiy.careers.MainActivity

@@ -12,6 +12,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 /** Reads the same published rows written by the admin's Jobs page. */
 class PublishedJobsRepository(
+    private val allowedLocations: List<String> = com.mrdiy.careers.data.search.MetroManilaScope.allowedTerms,
     private val loadPage: suspend (Long) -> List<PublishedJobRow> = { offset ->
         SupabaseProvider.client.postgrest["jobs"].select {
             filter { eq("status", "published") }
@@ -30,6 +31,7 @@ class PublishedJobsRepository(
             offset += page.size
         } while (page.size == 200)
         rows.filter { it.status == "published" }.distinctBy { it.id }.map { it.toJob() }
+            .filter { com.mrdiy.careers.data.search.MetroManilaScope.matches(it.location, allowedLocations) }
     }
 
     suspend fun getJobById(id: String): Result<Job> = request {
@@ -39,6 +41,7 @@ class PublishedJobsRepository(
                 eq("status", "published")
             }
         }.decodeList<PublishedJobRow>().firstOrNull()?.toJob()
+            ?.takeIf { com.mrdiy.careers.data.search.MetroManilaScope.matches(it.location, allowedLocations) }
             ?: error("This job is no longer available.")
     }
 
@@ -62,7 +65,10 @@ data class PublishedJobRow(
     val salary: String? = null,
     val salary_type: String? = null,
     val status: String? = null,
-    val created_at: String? = null
+    val created_at: String? = null,
+    val job_type: String? = null,
+    val category: String? = null,
+    val level: String? = null
 ) {
     fun toJob(): Job {
         val amounts = Regex("\\d+(?:\\.\\d+)?").findAll(salary.orEmpty().replace(",", ""))
@@ -72,7 +78,7 @@ data class PublishedJobRow(
         return Job(
             id = id.content, title = title.orEmpty(), company = "MR.D.I.Y. Philippines",
             branch = location.orEmpty(), location = location.orEmpty(),
-            jobType = "Not specified", category = "Not specified", level = "Not specified",
+            jobType = job_type ?: "Not specified", category = category ?: "Not specified", level = level ?: "Not specified",
             salaryMin = minimum, salaryMax = maximum,
             salaryType = salary_type?.lowercase()?.takeIf { it.isNotBlank() } ?: "monthly",
             postedAgo = created_at?.take(10).orEmpty(), aboutRole = description.orEmpty(),

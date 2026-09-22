@@ -53,12 +53,6 @@ public final class FragmentRecommendedJobsBinding implements ViewBinding {
   public final Chip chipAll;
 
   @NonNull
-  public final Chip chipCebu;
-
-  @NonNull
-  public final Chip chipDavao;
-
-  @NonNull
   public final Chip chipFulltime;
 
   @NonNull
@@ -107,14 +101,13 @@ public final class FragmentRecommendedJobsBinding implements ViewBinding {
       @NonNull LinearLayout actionIcons, @NonNull AppBarLayout appBar, @NonNull TextView btnFilter,
       @NonNull ImageButton btnMessages, @NonNull ImageButton btnNotifications,
       @NonNull Button btnRetry, @NonNull Button btnUploadResume, @NonNull Chip chipAll,
-      @NonNull Chip chipCebu, @NonNull Chip chipDavao, @NonNull Chip chipFulltime,
-      @NonNull Chip chipManila, @NonNull Chip chipParttime, @NonNull LinearLayout emptyGroup,
-      @NonNull LinearLayout errorGroup, @NonNull ChipGroup filterChips,
-      @NonNull LinearLayout loadingGroup, @NonNull MaterialCardView logoCard,
-      @NonNull View notificationBadge, @NonNull RecyclerView recommendedJobsRecycler,
-      @NonNull EditText searchInput, @NonNull LinearLayout titleBlock,
-      @NonNull TextView tvAiDescription, @NonNull TextView tvErrorMessage,
-      @NonNull TextView tvLoadingMessage) {
+      @NonNull Chip chipFulltime, @NonNull Chip chipManila, @NonNull Chip chipParttime,
+      @NonNull LinearLayout emptyGroup, @NonNull LinearLayout errorGroup,
+      @NonNull ChipGroup filterChips, @NonNull LinearLayout loadingGroup,
+      @NonNull MaterialCardView logoCard, @NonNull View notificationBadge,
+      @NonNull RecyclerView recommendedJobsRecycler, @NonNull EditText searchInput,
+      @NonNull LinearLayout titleBlock, @NonNull TextView tvAiDescription,
+      @NonNull TextView tvErrorMessage, @NonNull TextView tvLoadingMessage) {
     this.rootView = rootView;
     this.actionIcons = actionIcons;
     this.appBar = appBar;
@@ -124,8 +117,6 @@ public final class FragmentRecommendedJobsBinding implements ViewBinding {
     this.btnRetry = btnRetry;
     this.btnUploadResume = btnUploadResume;
     this.chipAll = chipAll;
-    this.chipCebu = chipCebu;
-    this.chipDavao = chipDavao;
     this.chipFulltime = chipFulltime;
     this.chipManila = chipManila;
     this.chipParttime = chipParttime;
@@ -215,18 +206,6 @@ public final class FragmentRecommendedJobsBinding implements ViewBinding {
       id = R.id.chip_all;
       Chip chipAll = ViewBindings.findChildViewById(rootView, id);
       if (chipAll == null) {
-        break missingId;
-      }
-
-      id = R.id.chip_cebu;
-      Chip chipCebu = ViewBindings.findChildViewById(rootView, id);
-      if (chipCebu == null) {
-        break missingId;
-      }
-
-      id = R.id.chip_davao;
-      Chip chipDavao = ViewBindings.findChildViewById(rootView, id);
-      if (chipDavao == null) {
         break missingId;
       }
 
@@ -321,10 +300,10 @@ public final class FragmentRecommendedJobsBinding implements ViewBinding {
       }
 
       return new FragmentRecommendedJobsBinding((CoordinatorLayout) rootView, actionIcons, appBar,
-          btnFilter, btnMessages, btnNotifications, btnRetry, btnUploadResume, chipAll, chipCebu,
-          chipDavao, chipFulltime, chipManila, chipParttime, emptyGroup, errorGroup, filterChips,
-          loadingGroup, logoCard, notificationBadge, recommendedJobsRecycler, searchInput,
-          titleBlock, tvAiDescription, tvErrorMessage, tvLoadingMessage);
+          btnFilter, btnMessages, btnNotifications, btnRetry, btnUploadResume, chipAll,
+          chipFulltime, chipManila, chipParttime, emptyGroup, errorGroup, filterChips, loadingGroup,
+          logoCard, notificationBadge, recommendedJobsRecycler, searchInput, titleBlock,
+          tvAiDescription, tvErrorMessage, tvLoadingMessage);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

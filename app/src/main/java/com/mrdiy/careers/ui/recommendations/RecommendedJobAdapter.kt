@@ -29,7 +29,7 @@ class RecommendedJobAdapter(
             val job = result.job
 
             binding.tvJobTitle.text = job.title
-            binding.tvCompanyBranch.text = "${job.company} · ${job.branch}"
+            binding.tvCompanyBranch.text = "Ref. ${job.id} · ${job.company} · ${job.branch}"
             val monthlyMin = job.getMonthlySalary()
             val monthlyMax = job.getMonthlySalaryMax()
             binding.tvSalary.text = if (monthlyMin == 0 && monthlyMax == 0) {
@@ -47,14 +47,10 @@ class RecommendedJobAdapter(
 
             // ── Match score badge ─────────────────────────────────────────────
             binding.tvMatchScore.text = "${result.matchScore}%"
-            binding.tvMatchLabel.text = result.matchLabel
+            binding.tvMatchLabel.text = "Match"
+            binding.matchBadge.contentDescription = "${result.matchScore}% match: ${result.matchLabel}"
 
-            val (badgeColor, labelColor) = when {
-                result.matchScore >= 85 -> Pair(R.color.match_excellent_bg, R.color.match_excellent_text)
-                result.matchScore >= 65 -> Pair(R.color.match_good_bg, R.color.match_good_text)
-                result.matchScore >= 45 -> Pair(R.color.match_fair_bg, R.color.match_fair_text)
-                else -> Pair(R.color.match_low_bg, R.color.match_low_text)
-            }
+            val (badgeColor, labelColor) = Pair(R.color.brand_yellow, R.color.brand_black)
             binding.matchBadge.setCardBackgroundColor(
                 ContextCompat.getColor(binding.root.context, badgeColor)
             )

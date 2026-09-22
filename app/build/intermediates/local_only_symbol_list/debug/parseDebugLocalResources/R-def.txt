@@ -71,12 +71,14 @@ drawable ic_bookmark_outline
 drawable ic_camera
 drawable ic_chat
 drawable ic_chevron_right
+drawable ic_clipboard
 drawable ic_delete
 drawable ic_document
 drawable ic_edit
 drawable ic_email_envelope
 drawable ic_facebook
 drawable ic_google
+drawable ic_heart
 drawable ic_help
 drawable ic_home
 drawable ic_info
@@ -91,9 +93,12 @@ drawable ic_search
 drawable ic_settings
 drawable ic_share
 drawable ic_work
+drawable job_accent
+drawable match_circle
 drawable mr_diy_logo
 drawable mr_diy_logo1
 drawable panda_mascot
+drawable yellow_wave
 id action_alerts_to_jobDetail
 id action_emailVerificationFragment_to_loginFragment
 id action_home_to_jobDetail
@@ -143,6 +148,7 @@ id btn_add_experience_edit
 id btn_add_skill
 id btn_applications
 id btn_apply
+id btn_avatar_camera
 id btn_back
 id btn_cancel_exp
 id btn_change_password
@@ -186,9 +192,7 @@ id chipLocation
 id chip_all
 id chip_all_cat
 id chip_category
-id chip_cebu
 id chip_corporate
-id chip_davao
 id chip_fulltime
 id chip_group_category
 id chip_group_location
@@ -364,6 +368,7 @@ id tv_job_title
 id tv_last_message
 id tv_loading_message
 id tv_location
+id tv_match_score
 id tv_phone
 id tv_posted_time
 id tv_profile_name
@@ -485,5 +490,6 @@ style DiySkillChip
 style DiyTagChip
 style DiyTagChipGray
 style DiyTextInputLayout
+style NeutralAutofill
 style Theme.MrDIYCareers
 style ToolbarTitle

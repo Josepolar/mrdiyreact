@@ -24,7 +24,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     fun loadProfileFromDb() {
         val userId = repository.getCurrentUserId()
+        if (_profile.value?.id != userId) _profile.value = UserProfile(id = userId)
         repository.loadProfile(userId) { loaded ->
+            if (userId != repository.getCurrentUserId()) return@loadProfile
             val profile = loaded ?: repository.loadProfileFromPrefs()
             _profile.postValue(profile)
             calculateProfileCompletion(profile)
@@ -49,11 +51,12 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         _profileCompletion.value = (completed * 100) / total
     }
 
-    fun currentProfile(): UserProfile = _profile.value ?: UserProfile()
+    fun currentProfile(): UserProfile = _profile.value?.takeIf { it.id == repository.getCurrentUserId() } ?: UserProfile()
 
     fun saveProfile(profile: UserProfile, onComplete: ((Boolean) -> Unit)? = null) {
         _isSaving.value = true
         repository.saveProfile(profile) { success ->
+            if (profile.id.isNotBlank() && profile.id != repository.getCurrentUserId()) return@saveProfile
             _isSaving.value = false
             if (success) {
                 _profile.value = profile
@@ -65,4 +68,5 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun refreshProfile() = loadProfileFromDb()
+    fun clearProfile() { _profile.value = UserProfile(); _profileCompletion.value = 0 }
 }

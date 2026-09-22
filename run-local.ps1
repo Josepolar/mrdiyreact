@@ -29,13 +29,12 @@ if (-not $sdkCandidates) {
 $sdkPath = $sdkCandidates | Select-Object -First 1
 $env:ANDROID_HOME = $sdkPath
 $env:ANDROID_SDK_ROOT = $sdkPath
-$sdkPropertyPath = $sdkPath.Replace('\', '\\')
+$sdkPropertyPath = $sdkPath.Replace('\', '/').Replace(':', '\:')
 $localPropertiesPath = Join-Path $projectRoot "local.properties"
 $sdkProperty = "sdk.dir=$sdkPropertyPath"
-$currentSdkProperty = if (Test-Path $localPropertiesPath) { (Get-Content $localPropertiesPath -Raw).Trim() } else { "" }
-if ($currentSdkProperty -ne $sdkProperty) {
-    $sdkProperty | Set-Content $localPropertiesPath
-}
+$existingProperties = if (Test-Path $localPropertiesPath) { @(Get-Content $localPropertiesPath) } else { @() }
+$otherProperties = @($existingProperties | Where-Object { $_ -notmatch '^sdk\.dir=' })
+@($otherProperties + $sdkProperty) | Set-Content $localPropertiesPath
 
 Set-Location $projectRoot
 Write-Host "Using JDK: $env:JAVA_HOME"

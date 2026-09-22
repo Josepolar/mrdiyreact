@@ -43,21 +43,19 @@ class WelcomeFragment : Fragment() {
     }
 
 private fun setupDropdowns() {
-        val experiences = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "10+")
+        val experiences = (0..10).map(Int::toString)
         val expAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, experiences)
         binding.actvExperience.setAdapter(expAdapter)
-        val registeredName = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-            .getString("user_full_name", "").orEmpty()
-        if (registeredName.isNotBlank()) binding.etFullName.setText(registeredName)
+        val auth = com.mrdiy.careers.data.auth.AuthManager(requireContext())
+        val cached = com.mrdiy.careers.data.repository.ProfileRepository(requireContext()).loadFromPrefs()
+        val registeredName = cached.fullName.ifBlank { auth.getCurrentUserName() }
+        if (binding.etFullName.text.isNullOrBlank()) binding.etFullName.setText(registeredName)
     }
 
-    private fun getUserIdFromPrefs(): String {
-        val prefs = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        return prefs.getString("user_id", "") ?: ""
-    }
 
     private fun setupClickListeners() {
         binding.btnContinue.setOnClickListener {
+            if (!binding.btnContinue.isEnabled) return@setOnClickListener
             val fullName = binding.etFullName.text?.trim().toString()
             val location = binding.etLocation.text?.trim().toString()
             val position = binding.etPosition.text?.trim().toString()
@@ -73,18 +71,11 @@ private fun setupDropdowns() {
                 return@setOnClickListener
             }
 
-            lifecycleScope.launch {
-                val prefs = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                val email = prefs.getString("user_email", "") ?: ""
-                val phone = prefs.getString("user_phone", "") ?: ""
-                val uid = withContext(Dispatchers.IO) {
-                    try {
-                        SupabaseProvider.client.auth.currentUserOrNull()?.id ?: getUserIdFromPrefs()
-                    } catch (e: Exception) {
-                        getUserIdFromPrefs()
-                    }
-                }
-
+            viewLifecycleOwner.lifecycleScope.launch {
+                val user = SupabaseProvider.client.auth.currentUserOrNull()
+                val email = user?.email.orEmpty()
+                val phone = user?.userMetadata?.get("phone")?.let { (it as? kotlinx.serialization.json.JsonPrimitive)?.content }.orEmpty()
+                val uid = com.mrdiy.careers.data.auth.AuthManager(requireContext()).getCurrentUserId().orEmpty()
                 if (uid.isEmpty()) {
                     Toast.makeText(requireContext(), "Please log in first", Toast.LENGTH_SHORT).show()
                     return@launch
@@ -99,17 +90,18 @@ private fun setupDropdowns() {
         binding.btnContinue.isEnabled = false
         binding.progressBar.visibility = View.VISIBLE
 
-        val profile = UserProfile(
+        val profile = viewModel.currentProfile().copy(
             id = userId,
             fullName = fullName,
             email = email,
             phone = phone,
             location = location,
             desiredPosition = position,
-            yearsOfExperience = experience.toIntOrNull() ?: 0
+            yearsOfExperience = com.mrdiy.careers.data.auth.AccountRules.experience(experience) ?: 0
         )
 
         viewModel.saveProfile(profile) { success ->
+            if (_binding == null || !isAdded) return@saveProfile
             binding.progressBar.visibility = View.GONE
             binding.btnContinue.isEnabled = true
 

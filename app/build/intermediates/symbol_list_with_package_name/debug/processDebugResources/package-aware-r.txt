@@ -3114,6 +3114,7 @@ drawable ic_camera
 drawable ic_chat
 drawable ic_chevron_right
 drawable ic_clear_black_24
+drawable ic_clipboard
 drawable ic_clock_black_24dp
 drawable ic_delete
 drawable ic_document
@@ -3121,6 +3122,7 @@ drawable ic_edit
 drawable ic_email_envelope
 drawable ic_facebook
 drawable ic_google
+drawable ic_heart
 drawable ic_help
 drawable ic_home
 drawable ic_info
@@ -3144,6 +3146,7 @@ drawable ic_search_black_24
 drawable ic_settings
 drawable ic_share
 drawable ic_work
+drawable job_accent
 drawable m3_avd_hide_password
 drawable m3_avd_show_password
 drawable m3_bottom_sheet_drag_handle
@@ -3155,6 +3158,7 @@ drawable m3_tabs_background
 drawable m3_tabs_line_indicator
 drawable m3_tabs_rounded_line_indicator
 drawable m3_tabs_transparent_background
+drawable match_circle
 drawable material_cursor_drawable
 drawable material_ic_calendar_black_24dp
 drawable material_ic_clear_black_24dp
@@ -3222,6 +3226,7 @@ drawable panda_mascot
 drawable test_level_drawable
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
+drawable yellow_wave
 id ALT
 id BOTTOM_END
 id BOTTOM_START
@@ -3376,6 +3381,7 @@ id btn_add_experience_edit
 id btn_add_skill
 id btn_applications
 id btn_apply
+id btn_avatar_camera
 id btn_back
 id btn_cancel_exp
 id btn_change_password
@@ -3434,9 +3440,7 @@ id chipLocation
 id chip_all
 id chip_all_cat
 id chip_category
-id chip_cebu
 id chip_corporate
-id chip_davao
 id chip_fulltime
 id chip_group_category
 id chip_group_location
@@ -3986,6 +3990,7 @@ id tv_job_title
 id tv_last_message
 id tv_loading_message
 id tv_location
+id tv_match_score
 id tv_phone
 id tv_posted_time
 id tv_profile_name
@@ -4889,6 +4894,7 @@ style MaterialAlertDialog_MaterialComponents_Title_Panel
 style MaterialAlertDialog_MaterialComponents_Title_Panel_CenterStacked
 style MaterialAlertDialog_MaterialComponents_Title_Text
 style MaterialAlertDialog_MaterialComponents_Title_Text_CenterStacked
+style NeutralAutofill
 style Platform_AppCompat
 style Platform_AppCompat_Light
 style Platform_MaterialComponents

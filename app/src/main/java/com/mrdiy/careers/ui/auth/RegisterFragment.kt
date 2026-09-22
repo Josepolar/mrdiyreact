@@ -10,7 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mrdiy.careers.R
-import com.mrdiy.careers.BuildConfig
+import com.mrdiy.careers.data.auth.AccountRules
 import com.mrdiy.careers.data.auth.AuthManager
 import com.mrdiy.careers.databinding.FragmentRegisterBinding
 
@@ -32,9 +32,10 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         authManager = AuthManager(requireContext())
-        binding.etEmail.setOnFocusChangeListener { _, focused -> if (focused) binding.tilEmail.error = null }
-        binding.etPassword.setOnFocusChangeListener { _, focused -> if (focused) binding.tilPassword.error = null }
-        binding.etPhone.setOnFocusChangeListener { _, focused -> if (focused) binding.tilPhone.error = null }
+        FormValidation.bind(binding.tilEmail) { if (AccountRules.email(it)) null else "Enter a valid email" }
+        FormValidation.bind(binding.tilPassword) { if (AccountRules.password(it)) null else "Password must be at least 6 characters" }
+        FormValidation.bind(binding.tilPhone) { if (AccountRules.phone(it)) null else "Enter a valid phone number" }
+        binding.cardFacebook.visibility = View.GONE
         setupClickListeners()
     }
 
@@ -44,6 +45,10 @@ class RegisterFragment : Fragment() {
         binding.btnRegister.setOnClickListener { registerUser() }
 
         binding.cardGoogle.setOnClickListener {
+            if (!binding.cbTerms.isChecked) {
+                Toast.makeText(requireContext(), "Please agree to the Terms of Service and Privacy Policy", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
             authManager.signInWithGoogle { _, message ->
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
@@ -54,6 +59,13 @@ class RegisterFragment : Fragment() {
     }
 
     private fun registerUser() {
+        if (!binding.btnRegister.isEnabled) return
+        if (!binding.cbTerms.isChecked) {
+            binding.cbTerms.error = "Please agree to the Terms of Service and Privacy Policy"
+            Toast.makeText(requireContext(), "Please agree to the Terms of Service and Privacy Policy", Toast.LENGTH_LONG).show()
+            return
+        }
+        binding.cbTerms.error = null
         val fullName        = binding.etFullName.text?.trim().toString()
         val email           = binding.etEmail.text?.trim().toString()
         val phone           = binding.etPhone.text?.trim().toString()
@@ -67,30 +79,15 @@ class RegisterFragment : Fragment() {
             return
         }
 
-        // Store email and phone in auth_prefs so WelcomeFragment can use them
-        requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-            .edit()
-            .putString("user_full_name", fullName)
-            .putString("user_email", email)
-            .putString("user_phone", phone)
-            .apply()
-
         binding.progressBar.isVisible = true
         binding.btnRegister.isEnabled = false
 
-        authManager.register(fullName, email, password) { success, message ->
+        authManager.register(fullName, email, password, binding.cbTerms.isChecked, phone) { success, message ->
                     if (!isAdded || _binding == null) return@register
             binding.progressBar.isVisible = false
             binding.btnRegister.isEnabled = true
 
             if (success) {
-                if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE) {
-                    // The signup has already created the account in Supabase.
-                    // Local demo mode skips the email gate for UI exploration only.
-                    authManager.enableDemoSession()
-                    findNavController().navigate(R.id.action_registerFragment_to_welcomeFragment)
-                    return@register
-                }
                 // ── Navigate to the email verification screen ──────────────────
                 // Safe Args: pass the email so the screen can display it and
                 // use it for the "Resend" button.
@@ -125,7 +122,7 @@ class RegisterFragment : Fragment() {
 
         if (phone.isEmpty()) {
             binding.tilPhone.error = "Phone number is required"; isValid = false
-        } else if (phone.length < 10) {
+        } else if (!AccountRules.phone(phone)) {
             binding.tilPhone.error = "Enter a valid phone number"; isValid = false
         } else { binding.tilPhone.error = null }
 

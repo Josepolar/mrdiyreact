@@ -1,6 +1,8 @@
 package com.mrdiy.careers.ui.settings
 
 import android.content.Context
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -94,11 +96,12 @@ class SettingsFragment : Fragment() {
     }
 
     private fun performLogout() {
-        authManager.logout()
-        authManager.saveLoginState(false)
-        requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE).edit().clear().apply()
-        requireContext().getSharedPreferences("current_user", Context.MODE_PRIVATE).edit().clear().apply()
-        findNavController().navigate(R.id.action_settings_to_login)
+        binding.btnLogout.isEnabled = false
+        androidx.lifecycle.ViewModelProvider(requireActivity())[com.mrdiy.careers.ui.profile.ProfileViewModel::class.java].clearProfile()
+        requireActivity().lifecycleScope.launch {
+            authManager.signOut()
+            // MainActivity observes NotAuthenticated and clears the protected back stack.
+        }
     }
 
     private fun showAboutDialog() {

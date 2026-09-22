@@ -13,7 +13,7 @@ import org.junit.Test
 
 class PublishedJobsTest {
     private fun row(id: Int, title: String = "Cashier", description: String = "") =
-        PublishedJobRow(JsonPrimitive(id), title = title, description = description, status = "published")
+        PublishedJobRow(JsonPrimitive(id), title = title, description = description, status = "published", location = "Makati")
 
     @Test fun adminRowsAcceptNumericAndUuidIdsAndNullableFields() {
         val numeric = Json.decodeFromString<PublishedJobRow>("""{"id":42,"title":null,"salary":null,"salary_type":null}""").toJob()

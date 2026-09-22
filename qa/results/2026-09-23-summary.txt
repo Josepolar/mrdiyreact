@@ -1,0 +1,16 @@
+Debug, Android test APK and unsigned release build: PASS
+Android lint: 0 errors, 525 warnings
+Emulator: MRDIY_QA, Android 17 / API 37.2, x86_64
+Fresh application data cleared before instrumentation
+Instrumentation: OK (6 tests)
+Manual: offline cold launch -> Login; malformed auth link -> safe message, no app crash
+
+com.mrdiy.careers.AccountAndResumeTest: tests=9; failures=0; errors=0
+com.mrdiy.careers.GeographicScopeTest: tests=2; failures=0; errors=0
+com.mrdiy.careers.PublishedJobsTest: tests=9; failures=0; errors=0
+com.mrdiy.careers.ResumeSkillsTest: tests=3; failures=0; errors=0
+com.mrdiy.careers.UniversalJobSearchEngineTest: tests=4; failures=0; errors=0
+
+Debug SHA256: 847DB118C97DFC856259F3BB89B37C76183FE8F473FB03790C870B93A8BEF45A
+Unsigned release SHA256: FB150EF011A3BC565E77742B2575967B9A7CCA1E2520840B7F15DCE62C836842
+SMTP receipt, live RLS isolation, authenticated E2E and admin job publishing: BLOCKED, not passed

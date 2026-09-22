@@ -8,6 +8,12 @@ In the Supabase project used by the app:
 2. Open **Project Settings → Auth → SMTP Settings** and configure a verified SMTP sender (host, port, username, password, and sender email). The built-in email service is rate-limited and is not intended for production delivery.
 3. In **Authentication → URL Configuration**, add this redirect URL exactly:
    `mrdiy://login-callback`
-4. Send a test registration and check the Auth logs for SMTP response codes. A successful user insert with no SMTP log indicates the provider is not configured or the sender is not verified.
+4. Send one registration to a mailbox you control. Inspect Auth logs and the SMTP provider's delivery events, including rejected, suppressed and bounced messages. User creation alone does not establish whether a message was sent or delivered.
 
-The app requests a verification-email resend after signup as a delivery fallback and also provides a manual **Resend** action on the verification screen. Resend rate-limit failures are handled without exposing provider details to the user.
+The app makes one signup request, which triggers Supabase Auth confirmation. It does **not** automatically resend after signup. The verification screen provides a manual Resend action with a cooldown. Only generic messages appear in the client; no SMTP credentials belong in the APK.
+
+Live check on 2026-09-23: the public Auth settings report email enabled, confirmation required, and signup enabled. This endpoint does not reveal SMTP configuration or delivery results. No mailbox receipt was verified.
+
+The default Supabase email service restricts recipients to organization team members and has very low rate limits. Configure custom SMTP for other recipients. See [Supabase SMTP documentation](https://supabase.com/docs/guides/auth/auth-smtp). Do not disable email confirmation to hide delivery failures.
+
+Verify afterward: register a unique mailbox alias once; confirm exactly one provider event and actual receipt; open the link with the app installed; verify login and name-prefilled onboarding. Also test an expired link and a deliberate manual resend. A web confirmation page must exist if used as the SMTP template's redirect; an APK update cannot repair a missing Vercel page or SMTP/DNS configuration.

@@ -1,6 +1,9 @@
 package com.mrdiy.careers.ui.auth
 
 import android.content.Context
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.mrdiy.careers.data.auth.AccountRules
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -34,27 +37,23 @@ class LoginFragment : Fragment() {
         authManager = AuthManager(requireContext())
         if (findNavController().currentDestination?.id != R.id.loginFragment) return
 
-        if (authManager.isLoggedIn) {
-            checkProfileAndNavigate()
-            return
-        }
-
         binding.cardFacebook.visibility = View.GONE
-        binding.etEmail.setOnFocusChangeListener { _, focused -> if (focused) binding.tilEmail.error = null }
-        binding.etPassword.setOnFocusChangeListener { _, focused -> if (focused) binding.tilPassword.error = null }
+        FormValidation.bind(binding.tilEmail) { if (AccountRules.email(it)) null else "Enter a valid email" }
+        FormValidation.bind(binding.tilPassword) { if (AccountRules.password(it)) null else "Password must be at least 6 characters" }
         setupClickListeners()
+        viewLifecycleOwner.lifecycleScope.launch {
+            binding.progressBar.isVisible = true
+            binding.btnLogin.isEnabled = false
+            val restored = authManager.restoreSession()
+            binding.progressBar.isVisible = false
+            binding.btnLogin.isEnabled = true
+            if (restored) checkProfileAndNavigate()
+        }
     }
 
 private fun checkProfileAndNavigate() {
         if (!isAdded || _binding == null || findNavController().currentDestination?.id != R.id.loginFragment) return
-        val authPrefs = requireContext()
-            .getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        val userId = authPrefs.getString("user_id", "") ?: ""
-
-        if (userId.isEmpty()) {
-            findNavController().navigate(R.id.action_loginFragment_to_welcomeFragment)
-            return
-        }
+        val userId = authManager.getCurrentUserId() ?: return
 
         // 1️⃣ Fast path – local cache
         val profilePrefs = requireContext()

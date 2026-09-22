@@ -8,6 +8,8 @@ import com.mrdiy.careers.model.Job
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import java.time.Instant
 import java.util.UUID
@@ -15,10 +17,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.*
 
 class ApplicationsRepository(context: Context) {
+    companion object { private val applyLock = Mutex() }
 
     private val authManager = AuthManager(context)
     private val table = "applications"
-    private val prefs = context.getSharedPreferences("demo_applications", Context.MODE_PRIVATE)
 
     data class ApplicationRow(
         val id: String,
@@ -32,13 +34,6 @@ class ApplicationsRepository(context: Context) {
     suspend fun getApplications(): Result<List<ApplicationRow>> = withContext(Dispatchers.IO) {
         val userId = authManager.getCurrentUserId()
             ?: return@withContext Result.failure(IllegalStateException("Please sign in first."))
-        if (userId == "debug-demo-user") {
-            val json = JSONArray(prefs.getString("items", "[]"))
-            return@withContext Result.success((0 until json.length()).map { i ->
-                val item = json.getJSONObject(i)
-                ApplicationRow(item.getString("id"), userId, item.getString("job_id"), item.getString("job_title"), applied_at = item.getString("applied_at"))
-            })
-        }
         try {
             val rows = SupabaseProvider.client.postgrest[table].select {
                 filter { eq("user_id", userId) }
@@ -65,23 +60,10 @@ class ApplicationsRepository(context: Context) {
         }
     }
 
-    suspend fun apply(job: Job): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun apply(job: Job): Result<Unit> = applyLock.withLock { applyOnce(job) }
+    private suspend fun applyOnce(job: Job): Result<Unit> = withContext(Dispatchers.IO) {
         val userId = authManager.getCurrentUserId()
             ?: return@withContext Result.failure(IllegalStateException("Please sign in before applying."))
-        if (userId == "debug-demo-user") {
-            val json = JSONArray(prefs.getString("items", "[]"))
-            if ((0 until json.length()).any { json.getJSONObject(it).getString("job_id") == job.id }) {
-                return@withContext Result.failure(IllegalStateException("You have already applied for this job."))
-            }
-            json.put(org.json.JSONObject().apply {
-                put("id", UUID.randomUUID().toString())
-                put("job_id", job.id)
-                put("job_title", job.title)
-                put("applied_at", Instant.now().toString())
-            })
-            prefs.edit().putString("items", json.toString()).apply()
-            return@withContext Result.success(Unit)
-        }
 
         try {
             PublishedJobsRepository().getJobById(job.id).getOrThrow()
@@ -107,10 +89,10 @@ class ApplicationsRepository(context: Context) {
             throw cancelled
         } catch (error: Exception) {
             val message = error.message.orEmpty()
-            Log.e("ApplicationsRepo", "Application submission failed: $message", error)
+            com.mrdiy.careers.data.SafeDiagnostics.record("apply", error)
             val safeMessage = when {
                 "relation" in message && "does not exist" in message ->
-                    "The admin applications table is not configured."
+                    "Applications are temporarily unavailable. Please try again later."
                 "row-level security" in message || "violates row-level security" in message ->
                     "Your account is not authorized to submit applications."
                 "JWT" in message || "not authenticated" in message ->

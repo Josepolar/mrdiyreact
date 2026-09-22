@@ -99,13 +99,6 @@ class RecommendedJobsFragment : Fragment() {
             if (isChecked) viewModel.onLocationFilter("Metro Manila")
         }
 
-        binding.chipCebu.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) viewModel.onLocationFilter("Cebu")
-        }
-
-        binding.chipDavao.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) viewModel.onLocationFilter("Davao")
-        }
     }
 
     private fun setupHeaderActions() {

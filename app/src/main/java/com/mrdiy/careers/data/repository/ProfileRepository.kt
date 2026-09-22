@@ -2,7 +2,7 @@ package com.mrdiy.careers.data.repository
 
 import android.content.Context
 import android.util.Log
-import com.mrdiy.careers.BuildConfig
+import com.mrdiy.careers.data.auth.AuthManager
 import com.mrdiy.careers.data.auth.SupabaseProvider
 import com.mrdiy.careers.model.UserProfile
 import io.github.jan.supabase.postgrest.from
@@ -73,7 +73,6 @@ data class UserProfileRow(
     val skills: String?                                             = null,
     @SerialName("work_experiences") val workExperiences: JsonElement? = null,
     val headline: String?                                           = null,
-    @SerialName("resume_text")       val resumeText: String?        = null,
     @SerialName("resume_file_name")  val resumeFileName: String?    = null,
     @SerialName("resume_url")         val resumeUrl: String?        = null
 )
@@ -87,7 +86,7 @@ class ProfileRepository(private val context: Context) {
     // calls use identical settings.
     private val json: Json = SupabaseProvider.supabaseJson
 
-    fun getCurrentUserId(): String = prefs.getString("user_id", "") ?: ""
+    fun getCurrentUserId(): String = AuthManager(context).getCurrentUserId().orEmpty()
 
     // ── Map domain model → Supabase DTO ──────────────────────────────────────
     private fun UserProfile.toRow(uid: String) = UserProfileRow(
@@ -102,7 +101,6 @@ class ProfileRepository(private val context: Context) {
         skills            = skills.joinToString(","),
         workExperiences   = json.parseToJsonElement(json.encodeToString(workExperiences)),
         headline          = headline,
-        resumeText        = resumeText,
         resumeFileName    = resumeName,
         resumeUrl         = resumeUrl
     )
@@ -130,7 +128,6 @@ class ProfileRepository(private val context: Context) {
             skills            = (skills ?: "").split(",")
                 .map { it.trim() }.filter { it.isNotBlank() },
             yearsOfExperience = yearsExperience?.toIntOrNull() ?: 0,
-            resumeText        = resumeText ?: "",
             resumeUrl         = resumeUrl         ?: "",
             resumeName        = resumeFileName    ?: "",
             resumeUploadedAt  = ""
@@ -141,7 +138,8 @@ class ProfileRepository(private val context: Context) {
     // SAVE
     // ─────────────────────────────────────────────────────────────────────────
     fun saveProfile(profile: UserProfile, onComplete: ((Boolean) -> Unit)? = null) {
-        val uid = profile.id.ifEmpty { getCurrentUserId() }
+        val uid = getCurrentUserId()
+        if (profile.id.isNotBlank() && profile.id != uid) { onComplete?.invoke(false); return }
 
         if (uid.isEmpty()) {
             Log.e("ProfileRepo", "saveProfile: no user ID — aborting")
@@ -149,22 +147,32 @@ class ProfileRepository(private val context: Context) {
             return
         }
 
-        if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE && uid == "debug-demo-user") {
-            saveLocally(uid, profile)
-            onComplete?.invoke(true)
-            return
-        }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val client = SupabaseProvider.client
-                val row    = profile.toRow(uid)
-                client.from("profiles").upsert(row) { onConflict = "user_id" }
+                // Keep the onboarding write compatible with existing profiles tables.
+                // Resume metadata is optional and is written by the resume flow; sending
+                // obsolete resume columns here made a brand-new profile fail before the
+                // user could finish onboarding.
+                val payload = kotlinx.serialization.json.buildJsonObject {
+                    put("user_id", JsonPrimitive(uid))
+                    put("full_name", JsonPrimitive(profile.fullName.ifBlank { "${profile.firstName} ${profile.lastName}".trim() }))
+                    put("location", JsonPrimitive(profile.location))
+                    put("desired_position", JsonPrimitive(profile.desiredPosition))
+                    put("years_experience", JsonPrimitive(profile.yearsOfExperience.toString()))
+                    put("email", JsonPrimitive(profile.email))
+                    put("phone", JsonPrimitive(profile.phone))
+                    put("about", JsonPrimitive(profile.about))
+                    put("skills", JsonPrimitive(profile.skills.joinToString(",")))
+                    put("work_experiences", json.parseToJsonElement(json.encodeToString(profile.workExperiences)))
+                    put("headline", JsonPrimitive(profile.headline))
+                }
+                client.from("profiles").upsert(payload) { onConflict = "user_id" }
                 saveLocally(uid, profile)
-                Log.d("ProfileRepo", "Upsert successful uid=$uid")
                 withContext(Dispatchers.Main) { onComplete?.invoke(true) }
             } catch (e: Exception) {
-                Log.e("ProfileRepo", "saveProfile failed: ${e.message}", e)
+                com.mrdiy.careers.data.SafeDiagnostics.record("backend_request", e)
                 withContext(Dispatchers.Main) { onComplete?.invoke(false) }
             }
         }
@@ -176,8 +184,7 @@ class ProfileRepository(private val context: Context) {
     fun loadProfile(userId: String = "", onResult: (UserProfile?) -> Unit) {
         val uid = userId.ifEmpty { getCurrentUserId() }
 
-        if (uid.isEmpty()) { onResult(null); return }
-        if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE && uid == "debug-demo-user") { onResult(loadFromPrefs(uid)); return }
+        if (uid.isEmpty() || uid != getCurrentUserId()) { onResult(null); return }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -198,7 +205,7 @@ class ProfileRepository(private val context: Context) {
                     withContext(Dispatchers.Main) { onResult(loadFromPrefs(uid)) }
                 }
             } catch (e: Exception) {
-                Log.e("ProfileRepo", "loadProfile failed: ${e.message}", e)
+                com.mrdiy.careers.data.SafeDiagnostics.record("backend_request", e)
                 withContext(Dispatchers.Main) { onResult(loadFromPrefs(uid)) }
             }
         }
@@ -208,6 +215,7 @@ class ProfileRepository(private val context: Context) {
     // Local cache helpers
     // ─────────────────────────────────────────────────────────────────────────
     private fun saveLocally(uid: String, profile: UserProfile) {
+        if (uid != getCurrentUserId()) return
         context.getSharedPreferences("profile_$uid", Context.MODE_PRIVATE).edit().apply {
             putString("user_id",          uid)
             putString("full_name",        profile.fullName.ifBlank { "${profile.firstName} ${profile.lastName}".trim() })
@@ -233,6 +241,7 @@ class ProfileRepository(private val context: Context) {
 
     fun loadFromPrefs(userId: String = ""): UserProfile {
         val uid       = userId.ifEmpty { getCurrentUserId() }
+        if (uid.isEmpty() || uid != getCurrentUserId()) return UserProfile()
         val p         = context.getSharedPreferences("profile_$uid", Context.MODE_PRIVATE)
         val firstName = p.getString("first_name", "") ?: ""
         val lastName  = p.getString("last_name",  "") ?: ""
@@ -263,61 +272,20 @@ class ProfileRepository(private val context: Context) {
 
     fun loadProfileFromPrefs(): UserProfile = loadFromPrefs()
 
-    fun saveResumeFields(
-        userId: String,
-        resumeName: String,
-        resumeUrl: String,
-        extractedProfile: UserProfile? = null,
-        extractedText: String? = null,
-        onComplete: ((Boolean, String?) -> Unit)? = null
-    ) {
-        if (userId.isEmpty()) {
-            onComplete?.invoke(false, "No user ID")
-            return
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val client = SupabaseProvider.client
-                val existingRow = try {
-                    client.from("profiles").select {
-                        filter { eq("user_id", userId) }
-                    }.decodeSingleOrNull<UserProfileRow>()
-                } catch (e: Exception) {
-                    null
-                }
-                val base = existingRow ?: loadFromPrefs(userId).toRow(userId)
-                val mergedSkills = (base.skills.orEmpty().split(",") + extractedProfile?.skills.orEmpty())
-                    .map { it.trim() }.filter { it.isNotEmpty() }.distinctBy { it.lowercase() }
-                val row = base.copy(
-                    resumeUrl = resumeUrl,
-                    resumeFileName = resumeName,
-                    resumeText = extractedText ?: base.resumeText,
-                    skills = mergedSkills.joinToString(","),
-                    yearsExperience = maxOf(base.yearsExperience?.toIntOrNull() ?: 0,
-                        extractedProfile?.yearsOfExperience ?: 0).toString()
-                )
-                if (existingRow != null) {
-                    client.from("profiles").update(row) {
-                        filter { eq("user_id", userId) }
-                    }
-                } else {
-                    client.from("profiles").insert(row)
-                }
-                saveLocally(userId, row.toDomain())
-                withContext(Dispatchers.Main) { onComplete?.invoke(true, null) }
-            } catch (e: Exception) {
-                Log.e("ProfileRepo", "saveResumeFields failed: ${e.message}", e)
-                withContext(Dispatchers.Main) { onComplete?.invoke(false, "Upload failed, please try again.") }
-            }
-        }
-    }
-
-    private fun saveResumeFieldsLocally(uid: String, resumeName: String, resumeUrl: String) {
-        context.getSharedPreferences("profile_$uid", Context.MODE_PRIVATE)
-            .edit().apply {
-                putString("resume_name", resumeName)
-                putString("resume_url", resumeUrl)
-                apply()
-            }
+    suspend fun persistResume(uid: String, name: String, path: String, parsed: UserProfile, text: String) = withContext(Dispatchers.IO) {
+        check(uid == getCurrentUserId() && ResumeFiles.ownedPath(path, uid))
+        val client = SupabaseProvider.client
+        val existing = client.from("profiles").select { filter { eq("user_id", uid) } }.decodeSingleOrNull<UserProfileRow>()
+            ?: error("Complete your profile before uploading a resume")
+        val mergedSkills = (existing.skills.orEmpty().split(",") + parsed.skills).map { it.trim() }
+            .filter { it.isNotEmpty() }.distinctBy { it.lowercase() }
+        // Send only resume fields; never overwrite the user's personal information.
+        val updated = client.from("profiles").update(kotlinx.serialization.json.buildJsonObject {
+            put("resume_url", JsonPrimitive(path))
+            put("resume_file_name", JsonPrimitive(name))
+            put("skills", JsonPrimitive(mergedSkills.joinToString(",")))
+        }) { filter { eq("user_id", uid) }; select() }.decodeSingle<UserProfileRow>()
+        check(uid == getCurrentUserId())
+        saveLocally(uid, updated.toDomain())
     }
 }

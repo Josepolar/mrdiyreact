@@ -1,0 +1,3 @@
+<resources>
+    <style name="NeutralAutofill"><item name="android:autofilledHighlight">@android:color/transparent</item></style>
+</resources>

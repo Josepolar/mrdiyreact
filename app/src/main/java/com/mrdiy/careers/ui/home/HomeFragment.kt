@@ -48,8 +48,8 @@ class HomeFragment : Fragment() {
 
         authManager = AuthManager(requireContext())
 
-        setupUserGreeting()
         setupRecyclerView()
+        setupUserGreeting()
         setupSearchBar()
         setupFilterChips()
         setupHeaderActions()
@@ -61,6 +61,7 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        setupUserGreeting()
 
         viewModel.loadSavedJobIds()
         viewModel.fetchJobsFromApi()
@@ -69,18 +70,20 @@ class HomeFragment : Fragment() {
     // ───────────────── Greeting ─────────────────
 
     private fun setupUserGreeting() {
-
-        val hour =
-            java.util.Calendar.getInstance()
-                .get(java.util.Calendar.HOUR_OF_DAY)
-
-        binding.tvGreeting.text = "Hello"
-
-        val userName = authManager.getCurrentUserName().trim().takeIf { it.isNotBlank() && !it.contains("@") }
-            ?: "Job Seeker"
-
-        binding.tvUserName.text =
-            "$userName 👋"
+        val uid = authManager.getCurrentUserId() ?: return
+        val repo = ProfileRepository(requireContext())
+        fun display(name: String) {
+            if (_binding == null || authManager.getCurrentUserId() != uid) return
+            binding.tvGreeting.text = com.mrdiy.careers.data.auth.AccountRules.greeting(name)
+            binding.tvUserName.visibility = View.GONE
+        }
+        display(repo.loadFromPrefs(uid).fullName.ifBlank { authManager.getCurrentUserName() })
+        repo.loadProfile(uid) { profile ->
+            if (_binding != null && authManager.getCurrentUserId() == uid) {
+                display(profile?.fullName?.ifBlank { authManager.getCurrentUserName() }.orEmpty())
+                jobAdapter.updateProfile(profile)
+            }
+        }
     }
 
     // ───────────────── RecyclerView ─────────────────
@@ -214,27 +217,6 @@ class HomeFragment : Fragment() {
                 }
             }
 
-        binding.chipCebu
-            .setOnCheckedChangeListener {
-                    _, isChecked ->
-
-                if (isChecked) {
-                    viewModel.onLocationFilter(
-                        "Cebu"
-                    )
-                }
-            }
-
-        binding.chipDavao
-            .setOnCheckedChangeListener {
-                    _, isChecked ->
-
-                if (isChecked) {
-                    viewModel.onLocationFilter(
-                        "Davao"
-                    )
-                }
-            }
     }
 
     // ───────────────── Header Actions ─────────────────

@@ -1,5 +1,7 @@
 package com.mrdiy.careers.ui.profile
 
+import io.github.jan.supabase.storage.storage
+import kotlin.time.Duration.Companion.minutes
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -52,7 +54,7 @@ class ProfileFragment : Fragment() {
         }
         viewModel.profileCompletion.observe(viewLifecycleOwner) { completion ->
             binding.profileProgressBar.progress = completion
-            binding.tvStatProfile.text = "$completion%"
+
         }
     }
 
@@ -60,9 +62,16 @@ class ProfileFragment : Fragment() {
         super.onResume()
         viewModel.refreshProfile()
         updateSavedJobsCount()
+        viewLifecycleOwner.lifecycleScope.launch {
+            com.mrdiy.careers.data.repository.PublishedJobsRepository().fetchOpenJobs().onSuccess { jobs ->
+                val top = com.mrdiy.careers.data.ml.JobMatchingEngine.matchJobs(viewModel.currentProfile(), jobs).maxOfOrNull { it.matchScore }
+                binding.tvStatProfile.text = top?.let { "$it%" } ?: "—"
+            }.onFailure { binding.tvStatProfile.text = "—" }
+        }
     }
 
     private fun setupClickListeners() {
+        binding.btnAvatarCamera.setOnClickListener { findNavController().navigate(R.id.action_profile_to_editProfile) }
         binding.sectionPersonalInfo.btnSectionEdit.setOnClickListener { findNavController().navigate(R.id.action_profile_to_editProfile) }
         binding.btnSettings.setOnClickListener {
             findNavController().navigate(R.id.settingsFragment)
@@ -105,9 +114,18 @@ class ProfileFragment : Fragment() {
     }
 
     private fun viewResumePdf(url: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
         try {
+            val uid = authManager.getCurrentUserId().orEmpty()
+            val prefix = "https://sfjpiyevasnmvddgtofz.supabase.co/storage/v1/object/public/resumes/"
+            val legacy = url.startsWith(prefix)
+            val path = if (legacy) url.removePrefix(prefix) else url
+            require(com.mrdiy.careers.data.repository.ResumeFiles.ownedPath(path, uid))
+            val signed = com.mrdiy.careers.data.auth.SupabaseProvider.client.storage
+                .from(if (legacy) "resumes" else com.mrdiy.careers.data.repository.ResumeFiles.BUCKET)
+                .createSignedUrl(path, 5.minutes)
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(url)
+                data = Uri.parse(signed)
             }
             if (intent.resolveActivity(requireContext().packageManager) != null) {
                 startActivity(intent)
@@ -119,13 +137,16 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    }
+
     private fun updateSavedJobsCount() {
         viewLifecycleOwner.lifecycleScope.launch {
             val count = savedJobsRepository.getSavedJobIds().size
             binding.tvSavedCount.text = "$count jobs"
+            binding.tvStatInterviews.text = count.toString()
             com.mrdiy.careers.data.repository.ApplicationsRepository(requireContext()).getApplications().onSuccess { applications ->
                 binding.tvStatApplications.text = applications.size.toString()
-                binding.tvStatInterviews.text = applications.count { it.status.contains("interview", true) }.toString()
+
             }
         }
     }

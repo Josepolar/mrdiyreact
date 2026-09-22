@@ -47,7 +47,7 @@ class JobDetailFragment : BaseFragment() {
             savedJobsRepository = SavedJobsRepository(requireContext())
             applicationsRepository = ApplicationsRepository(requireContext())
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
         }
 
         val jobId = arguments?.getString("jobId") ?: ""
@@ -129,7 +129,7 @@ class JobDetailFragment : BaseFragment() {
                     updateSaveButtonIcon()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
                 withContext(Dispatchers.Main) {
                     isJobSaved = false
                     updateSaveButtonIcon()
@@ -196,7 +196,7 @@ class JobDetailFragment : BaseFragment() {
             addBullets(binding.requirementsContainer, job.requirements)
             addBullets(binding.benefitsContainer, job.benefits)
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
             Toast.makeText(requireContext(), "Error displaying job details", Toast.LENGTH_SHORT).show()
         }
     }

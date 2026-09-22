@@ -79,7 +79,7 @@
             android:id="@+id/tvSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="We sent a verification link to\nyour email address"
+            android:text="Check your inbox and spam folder for a verification link"
             android:textSize="15sp"
             android:textColor="@color/text_secondary"
             android:gravity="center"
@@ -279,7 +279,7 @@
             android:id="@+id/btnRefreshStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Refresh Status"
+            android:text="I've verified my email — Sign in"
             android:textSize="14sp"
             android:textColor="@color/orange_primary"
             style="@style/Widget.MaterialComponents.Button.TextButton" />

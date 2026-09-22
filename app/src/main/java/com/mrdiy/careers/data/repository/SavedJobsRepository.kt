@@ -9,10 +9,13 @@ import com.mrdiy.careers.model.SavedJob
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import java.time.Instant
 
 class SavedJobsRepository(context: Context) {
+    companion object { private val saveLock = Mutex() }
 
     private val prefs: SharedPreferences = context.getSharedPreferences("saved_jobs", Context.MODE_PRIVATE)
     private val authManager = AuthManager(context)
@@ -27,10 +30,15 @@ class SavedJobsRepository(context: Context) {
         val saved_at: String
     )
 
-    suspend fun saveJob(job: Job): Boolean = withContext(Dispatchers.IO) {
+    suspend fun saveJob(job: Job): Boolean = saveLock.withLock { saveJobOnce(job) }
+    private suspend fun saveJobOnce(job: Job): Boolean = withContext(Dispatchers.IO) {
         try {
             val userId = authManager.getCurrentUserId() ?: return@withContext false
-            val savedAt = Instant.now().toString()
+            val existing = SupabaseProvider.client.postgrest[savedJobsTable].select {
+                filter { eq("user_id", userId); eq("job_id", job.id) }
+            }.decodeList<SavedJobRow>()
+            if (existing.isNotEmpty()) return@withContext true
+            val savedAt = kotlinx.datetime.Clock.System.now().toString()
 
             val savedJob = SavedJobRow(
                 id = java.util.UUID.randomUUID().toString(),
@@ -41,11 +49,11 @@ class SavedJobsRepository(context: Context) {
 
             SupabaseProvider.client.postgrest[savedJobsTable].insert(savedJob)
 
-            addToLocalCache(SavedJob(savedJob.id, userId, job.id, savedAt))
+            if (userId == authManager.getCurrentUserId()) addToLocalCache(SavedJob(savedJob.id, userId, job.id, savedAt))
 
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
             false
         }
     }
@@ -62,11 +70,11 @@ class SavedJobsRepository(context: Context) {
                     }
                 }
 
-            removeFromLocalCache(jobId)
+            if (userId == authManager.getCurrentUserId()) removeFromLocalCache(jobId)
 
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
             false
         }
     }
@@ -88,7 +96,7 @@ class SavedJobsRepository(context: Context) {
             val count = result.decodeList<SavedJobRow>().size
             count > 0
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
             false
         }
     }
@@ -101,6 +109,7 @@ class SavedJobsRepository(context: Context) {
                 .select { filter { eq("user_id", userId) } }
 
             val savedRows = result.decodeList<SavedJobRow>()
+            if (userId != authManager.getCurrentUserId()) return@withContext emptyList()
             syncLocalCache(savedRows)
 
             val allJobs = PublishedJobsRepository().fetchOpenJobs().getOrThrow()
@@ -108,8 +117,8 @@ class SavedJobsRepository(context: Context) {
 
             allJobs.filter { savedJobIds.contains(it.id) }
         } catch (e: Exception) {
-            e.printStackTrace()
-            getSavedJobsFromCache()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
+            throw e
         }
     }
 
@@ -123,7 +132,7 @@ class SavedJobsRepository(context: Context) {
             val savedRows = result.decodeList<SavedJobRow>()
             savedRows.map { it.job_id }.toSet()
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
             getLocallySavedJobIds()
         }
     }
@@ -162,7 +171,7 @@ class SavedJobsRepository(context: Context) {
             arr.put(newObj)
             prefs.edit().putString("saved_jobs_list_${authManager.getCurrentUserId()}", arr.toString()).apply()
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
         }
     }
 
@@ -181,7 +190,7 @@ class SavedJobsRepository(context: Context) {
 
             prefs.edit().putString("saved_jobs_list_${authManager.getCurrentUserId()}", newArr.toString()).apply()
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
         }
     }
 
@@ -198,7 +207,7 @@ class SavedJobsRepository(context: Context) {
             }
             prefs.edit().putString("saved_jobs_list_${authManager.getCurrentUserId()}", arr.toString()).apply()
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.mrdiy.careers.data.SafeDiagnostics.record("request", e)
         }
     }
 

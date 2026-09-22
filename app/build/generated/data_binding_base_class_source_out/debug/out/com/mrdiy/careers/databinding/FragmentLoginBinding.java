@@ -7,10 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.button.MaterialButton;
@@ -24,7 +24,7 @@ import java.lang.String;
 
 public final class FragmentLoginBinding implements ViewBinding {
   @NonNull
-  private final ConstraintLayout rootView;
+  private final ScrollView rootView;
 
   @NonNull
   public final MaterialButton btnLogin;
@@ -80,7 +80,7 @@ public final class FragmentLoginBinding implements ViewBinding {
   @NonNull
   public final TextView tvWelcome;
 
-  private FragmentLoginBinding(@NonNull ConstraintLayout rootView, @NonNull MaterialButton btnLogin,
+  private FragmentLoginBinding(@NonNull ScrollView rootView, @NonNull MaterialButton btnLogin,
       @NonNull MaterialCardView cardFacebook, @NonNull MaterialCardView cardGoogle,
       @NonNull MaterialCardView cardPhone, @NonNull TextInputEditText etEmail,
       @NonNull TextInputEditText etPassword, @NonNull ImageView ivLogo,
@@ -112,7 +112,7 @@ public final class FragmentLoginBinding implements ViewBinding {
 
   @Override
   @NonNull
-  public ConstraintLayout getRoot() {
+  public ScrollView getRoot() {
     return rootView;
   }
 
@@ -245,10 +245,10 @@ public final class FragmentLoginBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentLoginBinding((ConstraintLayout) rootView, btnLogin, cardFacebook,
-          cardGoogle, cardPhone, etEmail, etPassword, ivLogo, loginFormPanel, progressBar,
-          socialButtons, tilEmail, tilPassword, tvAppName, tvForgotPassword, tvOr, tvPhoneLogin,
-          tvRegister, tvWelcome);
+      return new FragmentLoginBinding((ScrollView) rootView, btnLogin, cardFacebook, cardGoogle,
+          cardPhone, etEmail, etPassword, ivLogo, loginFormPanel, progressBar, socialButtons,
+          tilEmail, tilPassword, tvAppName, tvForgotPassword, tvOr, tvPhoneLogin, tvRegister,
+          tvWelcome);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -114,11 +114,11 @@ INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 VALUES (
     'resumes',
     'resumes',
-    true,
-    52428800, -- 50 MB max file size for resumes
-    '{application/pdf}'
+    false,
+    10485760, -- 10 MB, consistent with the app
+    '{application/pdf,text/plain}'
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET public = false, file_size_limit = 10485760;
 
 
 -- ──────────────────────────────────────────────────────────────────────────

@@ -15,7 +15,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="@drawable/job_accent">
 
         <!-- Match badge (top-right) -->
         <androidx.cardview.widget.CardView
@@ -31,8 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="6dp"
+                android:paddingHorizontal="2dp"
+                android:paddingVertical="10dp"
                 android:gravity="center">
 
                 <TextView
@@ -41,14 +42,14 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:text="92%" />
+                    android:text="—" />
 
                 <TextView
                     android:id="@+id/tvMatchLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10sp"
-                    android:text="Excellent Match" />
+                    android:text="Match" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

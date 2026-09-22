@@ -51,7 +51,7 @@ class EmailVerificationFragment : Fragment() {
         binding.tvEmail.text = args.email
         startPulseAnimation()
         setupClickListeners()
-        checkIfEmailVerified()
+        startResendCooldown()
     }
 
     override fun onResume() {
@@ -61,48 +61,29 @@ class EmailVerificationFragment : Fragment() {
         }
     }
 
+    private var checking = false
     private fun checkIfEmailVerified() {
+        if (checking) return
+        checking = true
         binding.progressBar.isVisible = true
         binding.btnRefreshStatus.isEnabled = false
-
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val auth = SupabaseProvider.client.auth
-                auth.refreshCurrentSession()
-                delay(500)
-                val user = auth.currentUserOrNull()
-
-                if (user != null) {
-                    val emailConfirmed = user.appMetadata?.get("email_confirmed")?.jsonPrimitive?.content == "true"
-
-                    if (emailConfirmed) {
-                        isEmailVerified = true
-                        withContext(Dispatchers.Main) {
-                            if (!isAdded || _binding == null) return@withContext
-                            binding.progressBar.isVisible = false
-                            Toast.makeText(requireContext(), "Email verified! Redirecting...", Toast.LENGTH_SHORT).show()
-                            navigateToLogin()
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            if (!isAdded || _binding == null) return@withContext
-                            binding.progressBar.isVisible = false
-                            binding.btnRefreshStatus.isEnabled = true
-                        }
-                    }
+                auth.awaitInitialization()
+                if (auth.currentSessionOrNull() != null) {
+                    val user = auth.retrieveUserForCurrentSession(updateSession = true)
+                    if (user.emailConfirmedAt != null) { isEmailVerified = true; navigateToLogin() }
                 } else {
-                    withContext(Dispatchers.Main) {
-                        if (!isAdded || _binding == null) return@withContext
-                        binding.progressBar.isVisible = false
-                        binding.btnRefreshStatus.isEnabled = true
-                    }
+                    binding.tvEmail.contentDescription = "Verify " + args.email + " using the email link, then sign in."
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    if (!isAdded || _binding == null) return@withContext
-                    binding.progressBar.isVisible = false
-                    binding.btnRefreshStatus.isEnabled = true
-                }
+                com.mrdiy.careers.data.SafeDiagnostics.record("email_verification", e)
+                if (_binding != null) Toast.makeText(requireContext(), "Could not check verification. Open the email link, then sign in.", Toast.LENGTH_LONG).show()
+            } finally {
+                checking = false
+                _binding?.progressBar?.isVisible = false
+                _binding?.btnRefreshStatus?.isEnabled = true
             }
         }
     }
@@ -133,13 +114,14 @@ class EmailVerificationFragment : Fragment() {
         }
 
         binding.btnRefreshStatus.setOnClickListener {
-            checkIfEmailVerified()
+            if (SupabaseProvider.client.auth.currentSessionOrNull() == null) navigateToLogin()
+            else checkIfEmailVerified()
         }
     }
 
     private fun resendVerificationEmail() {
         val email = args.email
-        if (email.isBlank()) return
+        if (email.isBlank() || !binding.tvResend.isEnabled) return
 
         binding.tvResend.isEnabled = false
 
@@ -151,12 +133,13 @@ class EmailVerificationFragment : Fragment() {
                     if (!isAdded || _binding == null) return@withContext
                     Toast.makeText(
                         requireContext(),
-                        "Verification email resent to $email",
+                        "Verification email requested. Check your inbox and spam folder.",
                         Toast.LENGTH_SHORT
                     ).show()
                     startResendCooldown()
                 }
             } catch (e: Exception) {
+                com.mrdiy.careers.data.SafeDiagnostics.record("email_resend", e)
                 withContext(Dispatchers.Main) {
                     if (!isAdded || _binding == null) return@withContext
                     Toast.makeText(
@@ -171,6 +154,7 @@ class EmailVerificationFragment : Fragment() {
     }
 
     private fun startResendCooldown() {
+        binding.tvResend.isEnabled = false
         binding.tvResend.isVisible = false
         binding.tvResendTimer.isVisible = true
 

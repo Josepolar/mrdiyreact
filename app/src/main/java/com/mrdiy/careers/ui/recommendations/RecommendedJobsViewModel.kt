@@ -77,7 +77,7 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
                     applyFilters()
                 }
                 .onFailure { e ->
-                    Log.e("RecommendedJobsVM", "API failed: ${e.message}")
+                    com.mrdiy.careers.data.SafeDiagnostics.record("backend_request", e)
                     _isLoading.value = false
                     allJobs = emptyList()
                     _errorMessage.value = "Unable to load recommendations. Please retry."
@@ -156,7 +156,7 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
     private fun rankJobs(jobs: List<Job>): List<Job> {
         val profile = profileRepository.loadFromPrefs()
         hasMatchingProfile.value = profile.skills.isNotEmpty() || profile.desiredPosition.isNotBlank() ||
-            profile.about.isNotBlank() || profile.headline.isNotBlank() || profile.workExperiences.isNotEmpty()
+            profile.about.isNotBlank() || profile.headline.isNotBlank() || profile.workExperiences.isNotEmpty() || profile.resumeText.isNotBlank()
         description.value = if (hasMatchingProfile.value == true)
             "Published jobs ranked by similarity to your profile. Scores are text similarity, not hiring probabilities."
         else "Add your skills or desired position, or upload a resume to personalize these jobs."
@@ -183,7 +183,8 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
 
         if (!currentLocationFilter.isNullOrEmpty()) {
             filtered = filtered.filter { job ->
-                job.location.contains(currentLocationFilter!!, ignoreCase = true)
+                if (currentLocationFilter == "Metro Manila") MetroManilaScope.isMetro(job.location)
+                else job.location.contains(currentLocationFilter!!, ignoreCase = true)
             }
         }
 

@@ -48,12 +48,6 @@ public final class FragmentHomeBinding implements ViewBinding {
   public final Chip chipAll;
 
   @NonNull
-  public final Chip chipCebu;
-
-  @NonNull
-  public final Chip chipDavao;
-
-  @NonNull
   public final Chip chipFulltime;
 
   @NonNull
@@ -104,14 +98,14 @@ public final class FragmentHomeBinding implements ViewBinding {
   private FragmentHomeBinding(@NonNull CoordinatorLayout rootView,
       @NonNull LinearLayout actionIcons, @NonNull AppBarLayout appBar, @NonNull TextView btnFilter,
       @NonNull ImageButton btnMessages, @NonNull ImageButton btnNotifications,
-      @NonNull Chip chipAll, @NonNull Chip chipCebu, @NonNull Chip chipDavao,
-      @NonNull Chip chipFulltime, @NonNull Chip chipManila, @NonNull Chip chipParttime,
-      @NonNull ChipGroup filterChips, @NonNull RecyclerView jobsRecycler,
-      @NonNull MaterialCardView logoCard, @NonNull ImageView logoImage,
-      @NonNull View notificationBadge, @NonNull ProgressBar progressBar,
-      @NonNull EditText searchInput, @NonNull LinearLayout titleBlock,
-      @NonNull TextView tvEmptyState, @NonNull TextView tvGreeting, @NonNull TextView tvStatApplied,
-      @NonNull TextView tvStatSaved, @NonNull TextView tvUserName) {
+      @NonNull Chip chipAll, @NonNull Chip chipFulltime, @NonNull Chip chipManila,
+      @NonNull Chip chipParttime, @NonNull ChipGroup filterChips,
+      @NonNull RecyclerView jobsRecycler, @NonNull MaterialCardView logoCard,
+      @NonNull ImageView logoImage, @NonNull View notificationBadge,
+      @NonNull ProgressBar progressBar, @NonNull EditText searchInput,
+      @NonNull LinearLayout titleBlock, @NonNull TextView tvEmptyState,
+      @NonNull TextView tvGreeting, @NonNull TextView tvStatApplied, @NonNull TextView tvStatSaved,
+      @NonNull TextView tvUserName) {
     this.rootView = rootView;
     this.actionIcons = actionIcons;
     this.appBar = appBar;
@@ -119,8 +113,6 @@ public final class FragmentHomeBinding implements ViewBinding {
     this.btnMessages = btnMessages;
     this.btnNotifications = btnNotifications;
     this.chipAll = chipAll;
-    this.chipCebu = chipCebu;
-    this.chipDavao = chipDavao;
     this.chipFulltime = chipFulltime;
     this.chipManila = chipManila;
     this.chipParttime = chipParttime;
@@ -199,18 +191,6 @@ public final class FragmentHomeBinding implements ViewBinding {
       id = R.id.chip_all;
       Chip chipAll = ViewBindings.findChildViewById(rootView, id);
       if (chipAll == null) {
-        break missingId;
-      }
-
-      id = R.id.chip_cebu;
-      Chip chipCebu = ViewBindings.findChildViewById(rootView, id);
-      if (chipCebu == null) {
-        break missingId;
-      }
-
-      id = R.id.chip_davao;
-      Chip chipDavao = ViewBindings.findChildViewById(rootView, id);
-      if (chipDavao == null) {
         break missingId;
       }
 
@@ -311,10 +291,10 @@ public final class FragmentHomeBinding implements ViewBinding {
       }
 
       return new FragmentHomeBinding((CoordinatorLayout) rootView, actionIcons, appBar, btnFilter,
-          btnMessages, btnNotifications, chipAll, chipCebu, chipDavao, chipFulltime, chipManila,
-          chipParttime, filterChips, jobsRecycler, logoCard, logoImage, notificationBadge,
-          progressBar, searchInput, titleBlock, tvEmptyState, tvGreeting, tvStatApplied,
-          tvStatSaved, tvUserName);
+          btnMessages, btnNotifications, chipAll, chipFulltime, chipManila, chipParttime,
+          filterChips, jobsRecycler, logoCard, logoImage, notificationBadge, progressBar,
+          searchInput, titleBlock, tvEmptyState, tvGreeting, tvStatApplied, tvStatSaved,
+          tvUserName);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

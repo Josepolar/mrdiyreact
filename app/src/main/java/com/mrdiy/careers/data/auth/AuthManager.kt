@@ -17,7 +17,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
+import kotlinx.coroutines.CancellationException
+import com.mrdiy.careers.data.SafeDiagnostics
 
 object SupabaseProvider {
     private const val SUPABASE_URL      = "https://sfjpiyevasnmvddgtofz.supabase.co"
@@ -34,6 +36,8 @@ object SupabaseProvider {
 
     val client: SupabaseClient by lazy {
         createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY) {
+            // SDK debug logs include callback fragments containing access/refresh tokens.
+            defaultLogLevel = io.github.jan.supabase.logging.LogLevel.NONE
             install(Auth) {
                 scheme = "mrdiy"
                 host = "login-callback"
@@ -53,52 +57,54 @@ class AuthManager(private val context: Context) {
     private val client = SupabaseProvider.client
 
     companion object {
+        private val registrationGate = RequestGate()
+        private val loginGate = RequestGate()
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
         private const val KEY_USER_NAME    = "user_name"
         private const val KEY_USER_ID      = "user_id"
     }
 
-    val isLoggedIn: Boolean get() = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
-    val currentUser: String get() = prefs.getString(KEY_USER_NAME,  "") ?: ""
+    val isLoggedIn: Boolean get() {
+        val session = client.auth.currentSessionOrNull()
+        return AccountRules.sessionUsable(session?.user?.id, session?.expiresAt?.epochSeconds, System.currentTimeMillis() / 1000)
+    }
+    val currentUser: String get() = getCurrentUserName()
+    fun getCurrentUserId(): String? = if (isLoggedIn) client.auth.currentUserOrNull()?.id else null
+    fun getCurrentUserName(): String = client.auth.currentUserOrNull()?.userMetadata
+        ?.get("full_name")?.jsonPrimitive?.contentOrNull.orEmpty()
+    fun saveLoginState(isLoggedIn: Boolean) { /* Supabase session is the only authority. */ }
 
-    fun getCurrentUserName(): String = prefs.getString(KEY_USER_NAME, null)
-        ?.takeIf { it.isNotBlank() && !it.contains("@") }
-        ?: prefs.getString("user_full_name", "")
-        ?: ""
-
-    fun getCurrentUserId(): String? = prefs.getString(KEY_USER_ID, null)
-
-    fun saveLoginState(isLoggedIn: Boolean) {
-        prefs.edit().putBoolean(KEY_IS_LOGGED_IN, isLoggedIn).apply()
+    suspend fun restoreSession(): Boolean {
+        client.auth.awaitInitialization()
+        val session = client.auth.currentSessionOrNull() ?: return false
+        try {
+            if (!isLoggedIn) client.auth.refreshCurrentSession()
+            client.auth.retrieveUserForCurrentSession(updateSession = true)
+            return saveCurrentSupabaseUser()
+        } catch (e: CancellationException) { throw e }
+        catch (e: Exception) {
+            SafeDiagnostics.record("restore_session", e)
+            // Keep refresh credentials on transport failure, but do not enter protected screens.
+            return false
+        }
     }
 
-    fun clearDemoSession() {
-        if (getCurrentUserId() == "debug-demo-user") prefs.edit().clear().apply()
-    }
-
-    fun enableDemoSession() {
-        prefs.edit()
-            .putBoolean(KEY_IS_LOGGED_IN, true)
-            .putString(KEY_USER_ID, "debug-demo-user")
-            .putString(KEY_USER_NAME, "Demo User")
-            .apply()
-    }
-
-    fun logout() {
-        prefs.edit()
-            .putBoolean(KEY_IS_LOGGED_IN, false)
-            .remove(KEY_USER_NAME)
-            .remove(KEY_USER_ID)
-            .apply()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            runCatching { client.auth.signOut() }
+    suspend fun signOut() {
+        client.auth.awaitInitialization()
+        try { client.auth.signOut() }
+        catch (e: CancellationException) { throw e }
+        catch (e: Exception) { SafeDiagnostics.record("sign_out", e) }
+        finally {
+            client.auth.clearSession()
+            prefs.edit().clear().apply()
         }
     }
 
     fun login(email: String, password: String, callback: (Boolean, String) -> Unit) {
+        if (!loginGate.begin()) return
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                client.auth.awaitInitialization()
                 client.auth.signInWith(Email) {
                     this.email = email
                     this.password = password
@@ -106,7 +112,7 @@ class AuthManager(private val context: Context) {
                 val user = client.auth.currentUserOrNull()
                 if (user != null) {
                     val userId = user.id
-                    val userName = user.email ?: email
+                    val userName = user.userMetadata?.get("full_name")?.jsonPrimitive?.contentOrNull.orEmpty()
                     prefs.edit()
                         .putString(KEY_USER_ID, userId)
                         .putString(KEY_USER_NAME, userName)
@@ -124,32 +130,38 @@ class AuthManager(private val context: Context) {
                 withContext(Dispatchers.Main) {
                     callback(false, readableAuthError(e))
                 }
-            }
+            } finally { loginGate.end() }
         }
     }
 
-    fun register(fullName: String, email: String, password: String, callback: (Boolean, String) -> Unit) {
+    fun register(fullName: String, email: String, password: String, termsAccepted: Boolean,
+                 phone: String = "", callback: (Boolean, String) -> Unit) {
+        val validation = AccountRules.registrationError(fullName, email, password, termsAccepted)
+        if (validation != null) { callback(false, validation); return }
+        if (!registrationGate.begin()) { callback(false, "Registration is already in progress."); return }
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                client.auth.awaitInitialization()
                 client.auth.signUpWith(Email, redirectUrl = "mrdiy://login-callback") {
-                    this.email = email
+                    this.email = email.trim()
                     this.password = password
+                    data = buildJsonObject {
+                        put("full_name", fullName.trim())
+                        put("phone", phone.trim())
+                        put("terms_accepted", true)
+                        put("terms_accepted_at", kotlinx.datetime.Clock.System.now().toString())
+                    }
                 }
-                // Supabase normally sends this during sign-up. Request a resend as a
-                // fallback for projects whose SMTP provider accepted the user row but
-                // dropped the first delivery attempt. Rate-limit errors are ignored;
-                // the verification screen still exposes a manual resend action.
-                runCatching {
-                    client.auth.resendEmail(OtpType.Email.SIGNUP, email)
-                }
+                // Signup itself triggers Supabase Auth's confirmation email. Do not send twice.
+                prefs.edit().putString("pending_email", email.trim()).apply()
                 withContext(Dispatchers.Main) {
-                    callback(true, "Account created. Check your email (including spam) for the verification link.")
+                    callback(true, "Check your email, including spam, for a verification link. If you already have an account, sign in.")
                 }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback(false, readableRegistrationError(e))
-                }
-            }
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) {
+                SafeDiagnostics.record("registration", e)
+                withContext(Dispatchers.Main) { callback(false, readableRegistrationError(e)) }
+            } finally { registrationGate.end() }
         }
     }
 
@@ -203,10 +215,11 @@ class AuthManager(private val context: Context) {
     }
 
     fun saveCurrentSupabaseUser(): Boolean {
+        if (!isLoggedIn) return false
         val user = client.auth.currentUserOrNull() ?: return false
         prefs.edit()
             .putString(KEY_USER_ID, user.id)
-            .putString(KEY_USER_NAME, user.email ?: "Google User")
+            .putString(KEY_USER_NAME, getCurrentUserName())
             .putBoolean(KEY_IS_LOGGED_IN, true)
             .apply()
         return true
@@ -259,7 +272,7 @@ class AuthManager(private val context: Context) {
             "rate limit" in message || "too many" in message ->
                 "Too many email attempts. Please wait and try again later."
             "email" in message && "send" in message ->
-                "Your account was not created because the verification email could not be sent."
+                "We could not send the verification email. Please try again later."
             "network" in message || "timeout" in message ->
                 "Connection problem. Check your internet and try again."
             else -> "Registration failed. Check your details and try again."

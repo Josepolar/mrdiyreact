@@ -68,7 +68,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     applyFilters()
                 }
                 .onFailure { e ->
-                    Log.e("HomeViewModel", "API failed: ${e.message}")
+                    com.mrdiy.careers.data.SafeDiagnostics.record("backend_request", e)
                     allJobs = emptyList()
                     _isLoading.value = false
                     _errorMessage.value = "Unable to load published jobs. Please retry."
@@ -162,7 +162,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         if (!currentLocationFilter.isNullOrEmpty()) {
             filtered = filtered.filter { job ->
-                job.location.contains(currentLocationFilter!!, ignoreCase = true)
+                if (currentLocationFilter == "Metro Manila") MetroManilaScope.isMetro(job.location)
+                else job.location.contains(currentLocationFilter!!, ignoreCase = true)
             }
         }
 

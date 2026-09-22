@@ -24,7 +24,7 @@ class JobsViewModel : ViewModel() {
     private var currentCategory: String? = null
     private var currentLocation: String? = null
     private var minSalary: Int = 0
-    private var maxSalary: Int = 100000
+    private var maxSalary: Int = Int.MAX_VALUE
 
     init {
         viewModelScope.launch {
@@ -79,7 +79,7 @@ class JobsViewModel : ViewModel() {
         currentCategory = null
         currentLocation = null
         minSalary = 0
-        maxSalary = 100000
+        maxSalary = Int.MAX_VALUE
         applyFilters()
     }
 

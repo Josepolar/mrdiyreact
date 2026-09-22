@@ -18,6 +18,18 @@ class JobAdapter(
 ) : RecyclerView.Adapter<JobAdapter.JobViewHolder>() {
 
     private var savedJobIds: Set<String> = emptySet()
+    private var profile: com.mrdiy.careers.model.UserProfile? = null
+    private var scores: Map<String, Int> = emptyMap()
+    fun updateProfile(value: com.mrdiy.careers.model.UserProfile?) {
+        profile = value
+        updateScores()
+        notifyDataSetChanged()
+    }
+    private fun updateScores() {
+        scores = profile?.takeIf { it.skills.isNotEmpty() || it.desiredPosition.isNotBlank() || it.resumeText.isNotBlank() }
+            ?.let { com.mrdiy.careers.data.ml.JobMatchingEngine.matchJobs(it, jobs).associate { result -> result.job.id to result.matchScore } }
+            ?: emptyMap()
+    }
 
     // ───────── Update Jobs ─────────
 
@@ -61,6 +73,7 @@ class JobAdapter(
         )
 
         jobs = newJobs
+        updateScores()
 
         diff.dispatchUpdatesTo(this)
     }
@@ -103,13 +116,15 @@ class JobAdapter(
     ) {
 
         fun bind(job: Job) {
+            binding.tvMatchScore.text = scores[job.id]?.let { "$it%" } ?: "—"
+            binding.tvMatchScore.contentDescription = scores[job.id]?.let { "$it percent profile match" } ?: "Complete your profile for a match score"
 
             binding.tvJobTitle.text =
                 job.title
 
             binding.tvCompanyBranch.text =
                 "${job.company} · ${job.branch}"
-            binding.tvJobReference.text = "REF #${job.id.takeLast(8).uppercase()}"
+            binding.tvJobReference.text = "REF #${job.id}"
 
             binding.tvPostedTime.text =
                 job.postedAgo

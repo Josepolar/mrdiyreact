@@ -32,6 +32,7 @@ class ResumeUploadFragment : Fragment() {
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         uri ?: return@registerForActivityResult
+        if (_binding == null) return@registerForActivityResult
         val fileName = getFileName(uri)
 
         // Get MIME type
@@ -39,8 +40,8 @@ class ResumeUploadFragment : Fragment() {
 
         // Check file extension as backup
         val lowerFileName = fileName.lowercase()
-        val isPdfOrText = mimeType.startsWith("application/pdf") ||
-                          mimeType.startsWith("text/") ||
+        val isPdfOrText = mimeType == "application/pdf" ||
+                          mimeType == "text/plain" ||
                           lowerFileName.endsWith(".pdf") ||
                           lowerFileName.endsWith(".txt")
 
@@ -79,11 +80,12 @@ class ResumeUploadFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+        binding.toolbar.setNavigationOnClickListener { viewModel.cancelUpload(); findNavController().navigateUp() }
 
         binding.btnPickFile.setOnClickListener {
             // Accept PDF and plain text files only
-            pickFileLauncher.launch(arrayOf("application/pdf", "text/plain", "text/html", "text/csv"))
+            if (viewModel.busy) viewModel.cancelUpload()
+            else pickFileLauncher.launch(arrayOf("application/pdf", "text/plain"))
         }
 
         binding.btnViewRecommendations.setOnClickListener {
@@ -95,6 +97,7 @@ class ResumeUploadFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            binding.btnPickFile.text = if (state is ResumeUploadState.FileSelected || state is ResumeUploadState.ExtractingText || state is ResumeUploadState.UploadingFile) "Cancel upload" else "Choose File"
             // Reset visibility
             binding.progressGroup.visibility = View.GONE
             binding.resultCard.visibility = View.GONE
@@ -110,9 +113,9 @@ class ResumeUploadFragment : Fragment() {
                     binding.tvProgressMessage.text = "Reading your resume…"
                     binding.progressBar.isIndeterminate = true
                 }
-                is ResumeUploadState.ParsingWithAI -> {
+                is ResumeUploadState.UploadingFile, is ResumeUploadState.ParsingWithAI -> {
                     binding.progressGroup.visibility = View.VISIBLE
-                    binding.tvProgressMessage.text = "Analyzing your resume…"
+                    binding.tvProgressMessage.text = "Uploading your resume…"
                 }
                 is ResumeUploadState.ParseSuccess -> {
                     binding.resultCard.visibility = View.VISIBLE
@@ -120,7 +123,7 @@ class ResumeUploadFragment : Fragment() {
 
                     val result = state.result
                     binding.tvParsedName.text = state.profile.fullName.ifBlank { "Profile updated" }
-                    binding.tvParsedExp.text = "${result.yearsOfExperience} years of experience detected"
+                    binding.tvParsedExp.text = "Review your experience in Edit Profile"
                     binding.tvParsedSummary.text = result.summary
 
                     // Show skills as chips

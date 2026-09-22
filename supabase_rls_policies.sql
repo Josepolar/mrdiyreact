@@ -94,11 +94,11 @@ INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 VALUES (
     'resumes',
     'resumes',
-    true,
+    false,
     10485760,
     '{application/pdf,text/plain}'
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET public = false;
 
 
 -- ──────────────────────────────────────────────────────────────────────────

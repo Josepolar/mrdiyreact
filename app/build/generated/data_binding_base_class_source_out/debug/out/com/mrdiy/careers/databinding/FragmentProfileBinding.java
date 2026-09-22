@@ -34,6 +34,9 @@ public final class FragmentProfileBinding implements ViewBinding {
   public final LinearLayout btnApplications;
 
   @NonNull
+  public final ImageButton btnAvatarCamera;
+
+  @NonNull
   public final TextView btnEditAbout;
 
   @NonNull
@@ -104,12 +107,12 @@ public final class FragmentProfileBinding implements ViewBinding {
 
   private FragmentProfileBinding(@NonNull CoordinatorLayout rootView,
       @NonNull TextView btnAddExperience, @NonNull LinearLayout btnApplications,
-      @NonNull TextView btnEditAbout, @NonNull ImageButton btnEditProfile,
-      @NonNull TextView btnEditSkills, @NonNull LinearLayout btnSavedJobs,
-      @NonNull ImageButton btnSettings, @NonNull MaterialButton btnUploadResume,
-      @NonNull MaterialButton btnViewResume, @NonNull MaterialCardView cardResume,
-      @NonNull LinearLayout experienceContainer, @NonNull ImageView ivProfilePhoto,
-      @NonNull ProgressBar profileProgressBar,
+      @NonNull ImageButton btnAvatarCamera, @NonNull TextView btnEditAbout,
+      @NonNull ImageButton btnEditProfile, @NonNull TextView btnEditSkills,
+      @NonNull LinearLayout btnSavedJobs, @NonNull ImageButton btnSettings,
+      @NonNull MaterialButton btnUploadResume, @NonNull MaterialButton btnViewResume,
+      @NonNull MaterialCardView cardResume, @NonNull LinearLayout experienceContainer,
+      @NonNull ImageView ivProfilePhoto, @NonNull ProgressBar profileProgressBar,
       @NonNull SectionProfileCardBinding sectionPersonalInfo, @NonNull ChipGroup skillsChipGroup,
       @NonNull Toolbar toolbar, @NonNull TextView tvAboutText, @NonNull TextView tvAvatarInitials,
       @NonNull TextView tvProfileName, @NonNull TextView tvProfileRoleLoc,
@@ -119,6 +122,7 @@ public final class FragmentProfileBinding implements ViewBinding {
     this.rootView = rootView;
     this.btnAddExperience = btnAddExperience;
     this.btnApplications = btnApplications;
+    this.btnAvatarCamera = btnAvatarCamera;
     this.btnEditAbout = btnEditAbout;
     this.btnEditProfile = btnEditProfile;
     this.btnEditSkills = btnEditSkills;
@@ -180,6 +184,12 @@ public final class FragmentProfileBinding implements ViewBinding {
       id = R.id.btn_applications;
       LinearLayout btnApplications = ViewBindings.findChildViewById(rootView, id);
       if (btnApplications == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_avatar_camera;
+      ImageButton btnAvatarCamera = ViewBindings.findChildViewById(rootView, id);
+      if (btnAvatarCamera == null) {
         break missingId;
       }
 
@@ -323,11 +333,11 @@ public final class FragmentProfileBinding implements ViewBinding {
       }
 
       return new FragmentProfileBinding((CoordinatorLayout) rootView, btnAddExperience,
-          btnApplications, btnEditAbout, btnEditProfile, btnEditSkills, btnSavedJobs, btnSettings,
-          btnUploadResume, btnViewResume, cardResume, experienceContainer, ivProfilePhoto,
-          profileProgressBar, binding_sectionPersonalInfo, skillsChipGroup, toolbar, tvAboutText,
-          tvAvatarInitials, tvProfileName, tvProfileRoleLoc, tvResumeStatus, tvSavedCount,
-          tvStatApplications, tvStatInterviews, tvStatProfile);
+          btnApplications, btnAvatarCamera, btnEditAbout, btnEditProfile, btnEditSkills,
+          btnSavedJobs, btnSettings, btnUploadResume, btnViewResume, cardResume,
+          experienceContainer, ivProfilePhoto, profileProgressBar, binding_sectionPersonalInfo,
+          skillsChipGroup, toolbar, tvAboutText, tvAvatarInitials, tvProfileName, tvProfileRoleLoc,
+          tvResumeStatus, tvSavedCount, tvStatApplications, tvStatInterviews, tvStatProfile);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
