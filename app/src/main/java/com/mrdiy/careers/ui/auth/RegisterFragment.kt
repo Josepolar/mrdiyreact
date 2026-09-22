@@ -54,8 +54,8 @@ class RegisterFragment : Fragment() {
         val fullName        = binding.etFullName.text?.trim().toString()
         val email           = binding.etEmail.text?.trim().toString()
         val phone           = binding.etPhone.text?.trim().toString()
-        val password        = binding.etPassword.text?.trim().toString()
-        val confirmPassword = binding.etConfirmPassword.text?.trim().toString()
+        val password        = binding.etPassword.text?.toString().orEmpty()
+        val confirmPassword = binding.etConfirmPassword.text?.toString().orEmpty()
 
         if (!validateInput(fullName, email, phone, password, confirmPassword)) return
 
@@ -75,6 +75,7 @@ class RegisterFragment : Fragment() {
         binding.btnRegister.isEnabled = false
 
         authManager.register(fullName, email, password) { success, message ->
+                    if (!isAdded || _binding == null) return@register
             binding.progressBar.isVisible = false
             binding.btnRegister.isEnabled = true
 

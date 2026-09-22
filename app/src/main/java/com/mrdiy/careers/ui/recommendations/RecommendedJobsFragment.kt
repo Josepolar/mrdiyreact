@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.mrdiy.careers.R
 import com.mrdiy.careers.databinding.FragmentRecommendedJobsBinding
-import com.mrdiy.careers.ui.home.JobAdapter
 
 class RecommendedJobsFragment : Fragment() {
 
@@ -21,7 +20,7 @@ class RecommendedJobsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: RecommendedJobsViewModel by viewModels()
-    private lateinit var jobAdapter: JobAdapter
+    private lateinit var jobAdapter: RecommendedJobAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +39,9 @@ class RecommendedJobsFragment : Fragment() {
         setupHeaderActions()
         observeViewModel()
 
-        viewModel.loadRecommendations()
+        binding.btnUploadResume.setOnClickListener {
+            findNavController().navigate(R.id.action_recommendations_to_resumeUpload)
+        }
     }
 
     override fun onResume() {
@@ -50,14 +51,11 @@ class RecommendedJobsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        jobAdapter = JobAdapter(
-            jobs = emptyList(),
+        jobAdapter = RecommendedJobAdapter(
+            results = emptyList(),
             onJobClick = { job ->
                 val action = RecommendedJobsFragmentDirections.actionRecommendationsToJobDetail(job.id)
                 findNavController().navigate(action)
-            },
-            onSaveClick = { job ->
-                viewModel.toggleSaveJob(job)
             }
         )
 
@@ -75,6 +73,7 @@ class RecommendedJobsFragment : Fragment() {
         })
 
         binding.btnFilter.setOnClickListener {
+            binding.chipAll.isChecked = true
             viewModel.clearFilters()
             binding.searchInput.text?.clear()
         }
@@ -120,17 +119,17 @@ class RecommendedJobsFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.filteredJobs.observe(viewLifecycleOwner) { jobs ->
-            jobAdapter.updateList(jobs)
-            binding.emptyGroup.visibility = if (jobs.isEmpty()) View.VISIBLE else View.GONE
+        viewModel.description.observe(viewLifecycleOwner) { binding.tvAiDescription.text = it }
+        viewModel.matchResults.observe(viewLifecycleOwner) { jobs ->
+            jobAdapter.updateResults(jobs)
+            binding.emptyGroup.visibility = if (jobs.isEmpty() && viewModel.isLoading.value != true) View.VISIBLE else View.GONE
         }
 
-        viewModel.savedJobIds.observe(viewLifecycleOwner) { savedIds ->
-            jobAdapter.updateSavedJobs(savedIds)
-        }
+
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.loadingGroup.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.emptyGroup.visibility = if (!loading && viewModel.matchResults.value.orEmpty().isEmpty()) View.VISIBLE else View.GONE
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->

@@ -13,6 +13,7 @@ data class UserProfile(
     val desiredPosition: String = "",
     val headline: String = "",
     val about: String = "",
+    val resumeText: String = "",
     val resumeUrl: String = "",
     val resumeName: String = "",
     val resumeUploadedAt: String = "",

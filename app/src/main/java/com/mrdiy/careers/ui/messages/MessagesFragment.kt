@@ -26,10 +26,12 @@ class MessagesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnBack.setOnClickListener { findNavController().navigateUp() }
+        binding.tvUnreadCount.text = "Loading messages..."
         viewLifecycleOwner.lifecycleScope.launch {
             InboxRepository(requireContext()).messages().onSuccess { messages ->
                 renderMessages(messages)
-            }
+            }.onFailure { binding.tvUnreadCount.text = "Could not load messages. Please reopen this screen to retry." }
         }
     }
 
@@ -52,7 +54,7 @@ class MessagesFragment : Fragment() {
         }
 
         val unreadCount = messages.count { !it.isRead }
-        binding.tvUnreadCount.text = if (unreadCount > 0) "$unreadCount unread" else ""
+        binding.tvUnreadCount.text = if (messages.isEmpty()) "No messages yet" else if (unreadCount > 0) "$unreadCount unread" else "All messages read"
 
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()

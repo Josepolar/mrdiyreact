@@ -65,7 +65,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:maxLines="1"
+                    android:maxLines="3"
                     android:ellipsize="end" />
 
                 <TextView
@@ -104,7 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:chipSpacingHorizontal="4dp"
-                app:singleLine="true">
+                app:singleLine="false">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_job_type"

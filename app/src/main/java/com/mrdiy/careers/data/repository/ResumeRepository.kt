@@ -35,18 +35,7 @@ class ResumeRepository(private val context: Context) {
                 }
             } ?: ""
         } catch (e: Exception) {
-            try {
-                context.contentResolver.openInputStream(uri)?.use { stream ->
-                    val reader = BufferedReader(InputStreamReader(stream, Charsets.ISO_8859_1))
-                    val raw = reader.readText()
-                    Regex("[\\x20-\\x7E]{4,}").findAll(raw)
-                        .map { it.value }
-                        .filter { it.length > 10 }
-                        .joinToString(" ")
-                } ?: ""
-            } catch (e2: Exception) {
-                ""
-            }
+            throw IllegalArgumentException("This PDF could not be read. Use an unencrypted, text-based PDF.", e)
         }
     }
 
@@ -66,9 +55,7 @@ class ResumeRepository(private val context: Context) {
         val email = lines.find { it.contains("@") }?.extractEmail() ?: ""
         val phone = lines.find { it.contains(Regex("\\d{10,}")) }?.extractPhone() ?: ""
 
-        val lowerText = text.lowercase()
-        val skillKeywords = listOf("kotlin", "java", "android", "python", "javascript", "react", "sql", "git", "docker", "aws", "firebase", "machine learning", "data analysis", "html", "css", "node", "flutter")
-        val skills = skillKeywords.filter { lowerText.contains(it) }
+        val skills = com.mrdiy.careers.data.ml.ResumeSkills.extract(text)
 
         return UserProfile(
             fullName = name,
@@ -76,7 +63,8 @@ class ResumeRepository(private val context: Context) {
             lastName = name.split(" ").drop(1).joinToString(" ").ifEmpty { name },
             email = email,
             phone = phone,
-            skills = skills
+            skills = skills,
+            resumeText = text
         )
     }
 

@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: androidx.navigation.NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (!BuildConfig.DEMO_MODE) AuthManager(this).clearDemoSession()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)

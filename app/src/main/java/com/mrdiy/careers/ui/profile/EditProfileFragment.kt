@@ -279,6 +279,7 @@ class EditProfileFragment : Fragment() {
             email           = binding.etEmail.text?.trim().toString(),
             phone           = binding.etPhone.text?.trim().toString(),
             location        = binding.etLocation.text?.trim().toString(),
+            headline        = binding.etHeadline.text?.trim().toString(),
             desiredPosition = binding.etDesiredPosition.text?.trim().toString(),
             about           = binding.etAbout.text?.trim().toString(),
             skills          = currentSkills.toList(),
@@ -286,6 +287,7 @@ class EditProfileFragment : Fragment() {
             photoPath       = currentPhotoPath
         )
         viewModel.saveProfile(updated) { success ->
+            if (!isAdded || _binding == null) return@saveProfile
             if (success) {
                 findNavController().navigateUp()   // navigate only after save is done
             } else {

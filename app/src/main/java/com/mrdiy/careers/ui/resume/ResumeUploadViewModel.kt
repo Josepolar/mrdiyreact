@@ -41,6 +41,15 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
     fun processResume(uri: Uri, fileName: String) {
         viewModelScope.launch {
             _state.value = ResumeUploadState.FileSelected(fileName)
+            val size = try { context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: -1L }
+                catch (_: Exception) {
+                    _state.value = ResumeUploadState.Error("Could not open the selected file. Please choose it again.")
+                    return@launch
+                }
+            if (size > 10 * 1024 * 1024) {
+                _state.value = ResumeUploadState.Error("Please choose a resume smaller than 10 MB.")
+                return@launch
+            }
             _state.value = ResumeUploadState.ExtractingText
 
             val rawText = try {
@@ -92,8 +101,8 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
             //         to the profiles table via a PARTIAL update.
             //         Personal info (full_name, email, phone, etc.) is NEVER touched.
             val (saveSuccess, saveError) = suspendCancellableCoroutine<Pair<Boolean, String?>> { cont ->
-                profileRepo.saveResumeFields(userId, fileName, resumeUrl) { success, error ->
-                    cont.resume(Pair(success, error))
+                profileRepo.saveResumeFields(userId, fileName, resumeUrl, parsedProfile, rawText) { success, error ->
+                    if (cont.isActive) cont.resume(Pair(success, error))
                 }
             }
 
@@ -119,13 +128,14 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
         return withContext(Dispatchers.IO) {
             val client = SupabaseProvider.client
             val bucketName = "resumes"
-            val filePath = "$userId/resume.pdf"
+            val extension = if (context.contentResolver.getType(uri) == "application/pdf") "pdf" else "txt"
+            val filePath = "$userId/resume-${java.util.UUID.randomUUID()}.$extension"
 
             val inputStream = context.contentResolver.openInputStream(uri)
                 ?: throw Exception("Could not open file")
 
-            val bytes = inputStream.readBytes()
-            inputStream.close()
+            val bytes = inputStream.use { it.readBytes() }
+            require(bytes.size <= 10 * 1024 * 1024) { "Resume must be smaller than 10 MB." }
 
             client.storage.from(bucketName).upload(filePath, bytes) {
                 upsert = true

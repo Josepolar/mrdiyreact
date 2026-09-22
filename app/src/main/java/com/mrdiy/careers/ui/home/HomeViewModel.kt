@@ -6,8 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.mrdiy.careers.data.repository.JobRepository
-import com.mrdiy.careers.data.repository.PhpJobRepository
+import com.mrdiy.careers.data.repository.PublishedJobsRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
 import com.mrdiy.careers.model.Job
 import com.mrdiy.careers.data.search.UniversalJobSearchEngine
@@ -17,11 +16,12 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
+    val appliedCount = MutableLiveData<Int>()
+    private val applicationsRepository = com.mrdiy.careers.data.repository.ApplicationsRepository(application)
     private val savedJobsRepository = SavedJobsRepository(application)
-    private val phpJobRepository = PhpJobRepository()
+    private val publishedJobsRepository = PublishedJobsRepository()
 
-    private val fallbackJobs: List<Job> = JobRepository.getJobs()
-    private var allJobs: List<Job> = fallbackJobs
+    private var allJobs: List<Job> = emptyList()
 
     private val _filteredJobs = MutableLiveData<List<Job>>()
     val filteredJobs: LiveData<List<Job>> get() = _filteredJobs
@@ -44,33 +44,33 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private var autoRefreshJob: KJob? = null
     private var searchJob: KJob? = null
+    private var fetchJob: KJob? = null
 
     init {
-        Log.d("HomeViewModel", "Init started, setting hardcoded jobs first")
         _filteredJobs.value = allJobs
-        Log.d("HomeViewModel", "Hardcoded jobs set: ${allJobs.size} jobs")
         loadSavedJobIds()
         fetchJobsFromApi()
         startAutoRefresh()
     }
 
     fun fetchJobsFromApi() {
-        viewModelScope.launch {
+        if (fetchJob?.isActive == true) return
+        fetchJob = viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
 
-            phpJobRepository.fetchOpenJobs()
+            publishedJobsRepository.fetchOpenJobs()
                 .onSuccess { apiJobs ->
                     Log.d("HomeViewModel", "API returned ${apiJobs.size} jobs")
-                    allJobs = apiJobs.ifEmpty { fallbackJobs }
+                    allJobs = apiJobs
                     _isLoading.value = false
                     applyFilters()
                 }
                 .onFailure { e ->
                     Log.e("HomeViewModel", "API failed: ${e.message}")
-                    allJobs = fallbackJobs
+                    allJobs = emptyList()
                     _isLoading.value = false
-                    _errorMessage.value = "Live jobs are unavailable. Showing available jobs instead."
+                    _errorMessage.value = "Unable to load published jobs. Please retry."
                     applyFilters()
                 }
         }
@@ -81,18 +81,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         autoRefreshJob = viewModelScope.launch {
             while (true) {
                 delay(60_000)
-                phpJobRepository.fetchOpenJobs()
-                    .onSuccess { apiJobs ->
-                        allJobs = apiJobs.ifEmpty { fallbackJobs }
-                        applyFilters()
-                        loadSavedJobIds()
-                    }
+                fetchJobsFromApi()
             }
         }
     }
 
     fun loadSavedJobIds() {
         viewModelScope.launch {
+            applicationsRepository.getApplications().onSuccess { appliedCount.value = it.size }
             val ids = savedJobsRepository.getSavedJobIds()
             _savedJobIds.value = ids
             _savedCount.value = ids.size
@@ -127,14 +123,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun saveJob(job: Job) {
         viewModelScope.launch {
-            savedJobsRepository.saveJob(job)
+            if (!savedJobsRepository.saveJob(job)) _errorMessage.value = "Could not save this job. Please sign in and retry."
             loadSavedJobIds()
         }
     }
 
     fun unsaveJob(job: Job) {
         viewModelScope.launch {
-            savedJobsRepository.unsaveJob(job.id)
+            if (!savedJobsRepository.unsaveJob(job.id)) _errorMessage.value = "Could not remove saved job. Please retry."
             loadSavedJobIds()
         }
     }

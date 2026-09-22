@@ -10,8 +10,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.mrdiy.careers.R
-import com.mrdiy.careers.data.repository.PhpJobRepository
-import com.mrdiy.careers.data.repository.JobRepository
+import com.mrdiy.careers.data.repository.PublishedJobsRepository
 import com.mrdiy.careers.data.repository.ApplicationsRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
 import com.mrdiy.careers.databinding.FragmentJobDetailBinding
@@ -26,7 +25,7 @@ class JobDetailFragment : BaseFragment() {
     private var _binding: FragmentJobDetailBinding? = null
     private val binding get() = _binding!!
 
-    private val phpJobRepository = PhpJobRepository()
+    private val publishedJobsRepository = PublishedJobsRepository()
     private var applicationsRepository: ApplicationsRepository? = null
     private var savedJobsRepository: SavedJobsRepository? = null
     private var currentJob: Job? = null
@@ -61,49 +60,29 @@ class JobDetailFragment : BaseFragment() {
 
         showLoading(true)
 
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val result = phpJobRepository.getJobById(jobId)
-                withContext(Dispatchers.Main) {
-                    if (!isAdded || _binding == null) return@withContext
-                    showLoading(false)
-
-                    result.onSuccess { job ->
-                        currentJob = job
-                        checkIfJobSaved(job.id)
-                        displayJob(job)
-                    }.onFailure { e ->
-                        val fallbackJob = JobRepository.getJobById(jobId)
-                        if (fallbackJob != null) {
-                            currentJob = fallbackJob
-                            checkIfJobSaved(fallbackJob.id)
-                            displayJob(fallbackJob)
-                        } else {
-                            Toast.makeText(requireContext(), "We could not load this job. Please try again.", Toast.LENGTH_SHORT).show()
-                            findNavController().navigateUp()
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    if (!isAdded || _binding == null) return@withContext
-                    showLoading(false)
-                    val fallbackJob = JobRepository.getJobById(jobId)
-                    if (fallbackJob != null) {
-                        currentJob = fallbackJob
-                        checkIfJobSaved(fallbackJob.id)
-                        displayJob(fallbackJob)
-                    } else {
-                        Toast.makeText(requireContext(), "We could not load this job. Please try again.", Toast.LENGTH_SHORT).show()
-                        try {
-                            findNavController().navigateUp()
-                        } catch (ignored: Exception) {}
-                    }
-                }
+        viewLifecycleOwner.lifecycleScope.launch {
+            publishedJobsRepository.getJobById(jobId).onSuccess { job ->
+                currentJob = job
+                checkIfJobSaved(job.id)
+                displayJob(job)
+            }.onFailure {
+                Toast.makeText(requireContext(), "This job is unavailable or could not be loaded.", Toast.LENGTH_LONG).show()
+                findNavController().navigateUp()
             }
+            if (_binding != null) showLoading(false)
         }
 
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+
+        binding.btnShare.setOnClickListener {
+            currentJob?.let { job ->
+                val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(android.content.Intent.EXTRA_TEXT, "${job.title} at ${job.company}\n${job.location}\n\n${job.aboutRole}")
+                }
+                startActivity(android.content.Intent.createChooser(share, "Share job"))
+            }
+        }
 
         binding.btnApply.setOnClickListener {
             currentJob?.let { job ->
@@ -161,13 +140,17 @@ class JobDetailFragment : BaseFragment() {
 
     private fun toggleSaveJob(job: Job) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            if (isJobSaved) {
-                savedJobsRepository?.unsaveJob(job.id)
+            val success = if (isJobSaved) {
+                savedJobsRepository?.unsaveJob(job.id) == true
             } else {
-                savedJobsRepository?.saveJob(job)
+                savedJobsRepository?.saveJob(job) == true
             }
             withContext(Dispatchers.Main) {
                 if (!isAdded || _binding == null) return@withContext
+                if (!success) {
+                    Toast.makeText(requireContext(), "Could not update saved job. Please retry.", Toast.LENGTH_SHORT).show()
+                    return@withContext
+                }
                 isJobSaved = !isJobSaved
                 updateSaveButtonIcon()
                 val message = if (isJobSaved) "Job saved!" else "Job removed from saved"
@@ -190,8 +173,13 @@ class JobDetailFragment : BaseFragment() {
         try {
             binding.btnApply.isEnabled = true
             binding.tvJdTitle.text      = job.title
-            binding.tvJdCompanyLoc.text = "${job.company} · ${job.branch}, ${job.location}"
+            binding.tvJdCompanyLoc.text = "${job.company} - ${job.location}"
 
+            binding.jdTags.removeAllViews()
+            listOf(job.jobType, job.category, job.level).filter { it.isNotBlank() && it != "Not specified" }.forEach { tag ->
+                binding.jdTags.addView(com.google.android.material.chip.Chip(requireContext()).apply { text = tag; isClickable = false })
+            }
+            binding.jdTags.isVisible = binding.jdTags.childCount > 0
             val monthlyMin = job.getMonthlySalary()
             val monthlyMax = job.getMonthlySalaryMax()
             binding.tvSalaryRange.text = if (job.salaryMin == 0 && job.salaryMax == 0) {

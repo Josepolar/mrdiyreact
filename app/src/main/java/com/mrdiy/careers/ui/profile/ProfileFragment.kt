@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -61,6 +63,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
+        binding.sectionPersonalInfo.btnSectionEdit.setOnClickListener { findNavController().navigate(R.id.action_profile_to_editProfile) }
         binding.btnSettings.setOnClickListener {
             findNavController().navigate(R.id.settingsFragment)
         }
@@ -82,8 +85,9 @@ class ProfileFragment : Fragment() {
                 val currentProfile = viewModel.currentProfile()
                 val updatedExperiences = currentProfile.workExperiences.toMutableList()
                 updatedExperiences.add(newExperience)
-                viewModel.saveProfile(currentProfile.copy(workExperiences = updatedExperiences))
-                viewModel.refreshProfile()
+                viewModel.saveProfile(currentProfile.copy(workExperiences = updatedExperiences)) { success ->
+                    if (isAdded && !success) Toast.makeText(requireContext(), "Could not save experience. Please retry.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -116,8 +120,14 @@ class ProfileFragment : Fragment() {
     }
 
     private fun updateSavedJobsCount() {
-        val count = savedJobsRepository.getSavedCount()
-        binding.tvSavedCount.text = if (count > 0) "$count jobs" else "0 jobs"
+        viewLifecycleOwner.lifecycleScope.launch {
+            val count = savedJobsRepository.getSavedJobIds().size
+            binding.tvSavedCount.text = "$count jobs"
+            com.mrdiy.careers.data.repository.ApplicationsRepository(requireContext()).getApplications().onSuccess { applications ->
+                binding.tvStatApplications.text = applications.size.toString()
+                binding.tvStatInterviews.text = applications.count { it.status.contains("interview", true) }.toString()
+            }
+        }
     }
 
     private fun populateProfile(profile: UserProfile) {
@@ -127,6 +137,8 @@ class ProfileFragment : Fragment() {
             .joinToString("")
 
         binding.tvAvatarInitials.text = initials.ifEmpty { "?" }
+        binding.ivProfilePhoto.visibility = if (profile.photoPath.isBlank()) View.GONE else View.VISIBLE
+        if (profile.photoPath.isNotBlank()) com.bumptech.glide.Glide.with(this).load(profile.photoPath).into(binding.ivProfilePhoto)
         binding.tvProfileName.text = profile.fullName.ifEmpty { "Your Name" }
 
         binding.tvProfileRoleLoc.text = buildString {
@@ -183,7 +195,16 @@ class ProfileFragment : Fragment() {
             textSize = 12f
             setTextColor(resources.getColor(R.color.text_muted, null))
         }
-        binding.experienceContainer.addView(emptyExp)
+        if (profile.workExperiences.isEmpty()) binding.experienceContainer.addView(emptyExp)
+        profile.workExperiences.forEach { experience ->
+            val row = layoutInflater.inflate(R.layout.item_experience_row, binding.experienceContainer, false)
+            row.findViewById<TextView>(R.id.tv_exp_initials).text = experience.initials
+            row.findViewById<TextView>(R.id.tv_exp_role).text = experience.role
+            row.findViewById<TextView>(R.id.tv_exp_company).text = experience.company
+            row.findViewById<TextView>(R.id.tv_exp_period).text = experience.displayPeriod
+            row.findViewById<View>(R.id.btn_delete_exp).visibility = View.GONE
+            binding.experienceContainer.addView(row)
+        }
 
         updateSavedJobsCount()
     }

@@ -1,6 +1,8 @@
 package com.mrdiy.careers.ui.home
 
+import androidx.core.view.isVisible
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -111,6 +113,8 @@ class JobAdapter(
             binding.tvPostedTime.text =
                 job.postedAgo
 
+            binding.chipJobType.visibility = if (job.jobType.isNotBlank() && job.jobType != "Not specified") View.VISIBLE else View.GONE
+            binding.chipCategory.visibility = if (job.category.isNotBlank() && job.category != "Not specified") View.VISIBLE else View.GONE
             binding.chipJobType.text =
                 job.jobType
 

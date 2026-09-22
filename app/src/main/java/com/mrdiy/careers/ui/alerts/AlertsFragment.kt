@@ -27,13 +27,22 @@ class AlertsFragment : BaseFragment() {
         (requireActivity() as MainActivity).markAlertsRead()
 
         binding.tvUnreadCount.text = ""
+        binding.tvEmptyAlerts.text = "Loading notifications..."
         viewLifecycleOwner.lifecycleScope.launch {
             InboxRepository(requireContext()).alerts().onSuccess { alerts ->
                 binding.alertsRecycler.visibility = if (alerts.isEmpty()) View.GONE else View.VISIBLE
                 binding.alertsRecycler.layoutManager = LinearLayoutManager(requireContext())
-                binding.alertsRecycler.adapter = AlertAdapter { }
+                binding.tvUnreadCount.text = if (alerts.isEmpty()) "" else "${alerts.count { !it.isRead }} unread"
+                binding.tvEmptyAlerts.visibility = if (alerts.isEmpty()) View.VISIBLE else View.GONE
+                binding.tvEmptyAlerts.text = "No notifications yet."
+                binding.alertsRecycler.adapter = AlertAdapter { alert ->
+                    alert.jobId?.let { id -> androidx.navigation.fragment.NavHostFragment.findNavController(this@AlertsFragment).navigate(com.mrdiy.careers.R.id.jobDetailFragment, android.os.Bundle().apply { putString("jobId", id) }) }
+                }
                 (binding.alertsRecycler.adapter as AlertAdapter).submitList(alerts)
-            }
+            }.onFailure { binding.alertsRecycler.visibility = View.GONE
+                binding.tvEmptyAlerts.visibility = View.VISIBLE
+                binding.tvEmptyAlerts.text = "Could not load notifications. Tap to retry."
+                binding.tvEmptyAlerts.setOnClickListener { androidx.navigation.fragment.NavHostFragment.findNavController(this@AlertsFragment).navigate(com.mrdiy.careers.R.id.alertsFragment) } }
         }
     }
 

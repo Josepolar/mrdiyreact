@@ -46,6 +46,12 @@ class JobsFragment : BaseFragment() {
             binding.tvJobCount.text = "${jobs.size} jobs found"
         }
 
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (message != null) com.google.android.material.snackbar.Snackbar
+                .make(binding.root, message, com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+                .setAction("Retry") { viewModel.reload() }.show()
+        }
+
         // Search bar
         binding.searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
@@ -93,6 +99,11 @@ class JobsFragment : BaseFragment() {
             binding.chipGroupLocation.clearCheck()
             binding.salarySlider.values = listOf(0f, 100000f)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.reload()
     }
 
     override fun onDestroyView() {

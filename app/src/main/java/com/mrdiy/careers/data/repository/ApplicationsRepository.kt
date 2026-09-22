@@ -11,12 +11,13 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.time.Instant
 import java.util.UUID
-import java.nio.charset.StandardCharsets
+import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.json.*
 
 class ApplicationsRepository(context: Context) {
 
     private val authManager = AuthManager(context)
-    private val table = "job_applications"
+    private val table = "applications"
     private val prefs = context.getSharedPreferences("demo_applications", Context.MODE_PRIVATE)
 
     data class ApplicationRow(
@@ -39,9 +40,26 @@ class ApplicationsRepository(context: Context) {
             })
         }
         try {
-            Result.success(SupabaseProvider.client.postgrest[table].select {
+            val rows = SupabaseProvider.client.postgrest[table].select {
                 filter { eq("user_id", userId) }
-            }.decodeList())
+            }.decodeList<JsonObject>()
+            val ids = rows.mapNotNull { it["job_id"]?.jsonPrimitive?.contentOrNull }.distinct()
+            val titles = if (ids.isEmpty()) emptyMap() else SupabaseProvider.client.postgrest["jobs"].select {
+                filter { isIn("id", ids) }
+            }.decodeList<PublishedJobRow>().associate { it.id.content to it.title.orEmpty() }
+            Result.success(rows.map { row ->
+                val jobId = row["job_id"]?.jsonPrimitive?.contentOrNull.orEmpty()
+                ApplicationRow(
+                    id = row["id"]!!.jsonPrimitive.content,
+                    user_id = userId, job_id = jobId,
+                    job_title = titles[jobId]?.takeIf { it.isNotBlank() } ?: "Job #$jobId",
+                    status = row["status"]?.jsonPrimitive?.contentOrNull ?: "Pending",
+                    applied_at = row["created_at"]?.jsonPrimitive?.contentOrNull
+                        ?: row["applied_at"]?.jsonPrimitive?.contentOrNull.orEmpty()
+                )
+            })
+        } catch (cancelled: CancellationException) {
+            throw cancelled
         } catch (error: Exception) {
             Result.failure(IllegalStateException("Applications could not be loaded."))
         }
@@ -66,34 +84,33 @@ class ApplicationsRepository(context: Context) {
         }
 
         try {
-            val databaseJobId = UUID.nameUUIDFromBytes(job.id.toByteArray(StandardCharsets.UTF_8)).toString()
+            PublishedJobsRepository().getJobById(job.id).getOrThrow()
+            val databaseJobId = job.id
             val existing = SupabaseProvider.client.postgrest[table].select {
                 filter {
                     eq("user_id", userId)
                     eq("job_id", databaseJobId)
                 }
-            }.decodeList<ApplicationRow>()
+            }.decodeList<JsonObject>()
 
             if (existing.isNotEmpty()) {
                 Result.failure(IllegalStateException("You have already applied for this job."))
             } else {
-                SupabaseProvider.client.postgrest[table].insert(
-                    ApplicationRow(
-                        id = UUID.randomUUID().toString(),
-                        user_id = userId,
-                        job_id = databaseJobId,
-                        job_title = job.title,
-                        applied_at = Instant.now().toString()
-                    )
-                )
+                SupabaseProvider.client.postgrest[table].insert(buildJsonObject {
+                    put("user_id", userId)
+                    put("job_id", job.id.toLongOrNull()?.let { JsonPrimitive(it) } ?: JsonPrimitive(job.id))
+                    put("status", "Pending")
+                })
                 Result.success(Unit)
             }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
         } catch (error: Exception) {
             val message = error.message.orEmpty()
             Log.e("ApplicationsRepo", "Application submission failed: $message", error)
             val safeMessage = when {
                 "relation" in message && "does not exist" in message ->
-                    "Run the job_applications SQL migration in Supabase first."
+                    "The admin applications table is not configured."
                 "row-level security" in message || "violates row-level security" in message ->
                     "Your account is not authorized to submit applications."
                 "JWT" in message || "not authenticated" in message ->

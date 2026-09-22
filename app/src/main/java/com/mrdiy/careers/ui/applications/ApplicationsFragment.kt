@@ -73,7 +73,7 @@ private class ApplicationsAdapter(
         val item = applications[position]
         holder.title.text = item.job_title
         holder.status.text = "Status: ${item.status}"
-        holder.date.text = "Applied ${item.applied_at}"
+        holder.date.text = if (item.applied_at.isBlank()) "" else "Applied ${item.applied_at}"
     }
 
     override fun getItemCount() = applications.size

@@ -19,6 +19,7 @@ class SavedJobsRepository(context: Context) {
 
     private val savedJobsTable = "saved_jobs"
 
+    @kotlinx.serialization.Serializable
     data class SavedJobRow(
         val id: String,
         val user_id: String,
@@ -102,7 +103,7 @@ class SavedJobsRepository(context: Context) {
             val savedRows = result.decodeList<SavedJobRow>()
             syncLocalCache(savedRows)
 
-            val allJobs = JobRepository.getJobs()
+            val allJobs = PublishedJobsRepository().fetchOpenJobs().getOrThrow()
             val savedJobIds = savedRows.map { it.job_id }.toSet()
 
             allJobs.filter { savedJobIds.contains(it.id) }
@@ -129,7 +130,7 @@ class SavedJobsRepository(context: Context) {
 
     fun getSavedCount(): Int {
         return try {
-            val json = prefs.getString("saved_jobs_list", "[]") ?: "[]"
+            val json = prefs.getString("saved_jobs_list_${authManager.getCurrentUserId()}", "[]") ?: "[]"
             JSONArray(json).length()
         } catch (e: Exception) {
             0
@@ -138,7 +139,7 @@ class SavedJobsRepository(context: Context) {
 
     private fun getLocallySavedJobIds(): Set<String> {
         return try {
-            val json = prefs.getString("saved_jobs_list", "[]") ?: "[]"
+            val json = prefs.getString("saved_jobs_list_${authManager.getCurrentUserId()}", "[]") ?: "[]"
             val arr = JSONArray(json)
             (0 until arr.length()).map { arr.getJSONObject(it).getString("job_id") }.toSet()
         } catch (e: Exception) {
@@ -148,7 +149,7 @@ class SavedJobsRepository(context: Context) {
 
     private fun addToLocalCache(savedJob: SavedJob) {
         try {
-            val json = prefs.getString("saved_jobs_list", "[]") ?: "[]"
+            val json = prefs.getString("saved_jobs_list_${authManager.getCurrentUserId()}", "[]") ?: "[]"
             val arr = JSONArray(json)
 
             val newObj = org.json.JSONObject().apply {
@@ -159,7 +160,7 @@ class SavedJobsRepository(context: Context) {
             }
 
             arr.put(newObj)
-            prefs.edit().putString("saved_jobs_list", arr.toString()).apply()
+            prefs.edit().putString("saved_jobs_list_${authManager.getCurrentUserId()}", arr.toString()).apply()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -167,7 +168,7 @@ class SavedJobsRepository(context: Context) {
 
     private fun removeFromLocalCache(jobId: String) {
         try {
-            val json = prefs.getString("saved_jobs_list", "[]") ?: "[]"
+            val json = prefs.getString("saved_jobs_list_${authManager.getCurrentUserId()}", "[]") ?: "[]"
             val arr = JSONArray(json)
             val newArr = JSONArray()
 
@@ -178,7 +179,7 @@ class SavedJobsRepository(context: Context) {
                 }
             }
 
-            prefs.edit().putString("saved_jobs_list", newArr.toString()).apply()
+            prefs.edit().putString("saved_jobs_list_${authManager.getCurrentUserId()}", newArr.toString()).apply()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -195,14 +196,14 @@ class SavedJobsRepository(context: Context) {
                     put("saved_at", row.saved_at)
                 })
             }
-            prefs.edit().putString("saved_jobs_list", arr.toString()).apply()
+            prefs.edit().putString("saved_jobs_list_${authManager.getCurrentUserId()}", arr.toString()).apply()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun getSavedJobsFromCache(): List<Job> {
+    private suspend fun getSavedJobsFromCache(): List<Job> {
         val jobIds = getLocallySavedJobIds()
-        return JobRepository.getJobs().filter { jobIds.contains(it.id) }
+        return PublishedJobsRepository().fetchOpenJobs().getOrDefault(emptyList()).filter { it.id in jobIds }
     }
 }

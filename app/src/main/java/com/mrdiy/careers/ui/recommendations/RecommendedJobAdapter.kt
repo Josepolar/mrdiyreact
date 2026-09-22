@@ -1,7 +1,9 @@
 package com.mrdiy.careers.ui.recommendations
 
 import android.graphics.Color
+import androidx.core.view.isVisible
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -11,9 +13,14 @@ import com.mrdiy.careers.model.Job
 import com.mrdiy.careers.model.JobMatchResult
 
 class RecommendedJobAdapter(
-    private val results: List<JobMatchResult>,
+    private var results: List<JobMatchResult>,
     private val onJobClick: (Job) -> Unit
 ) : RecyclerView.Adapter<RecommendedJobAdapter.ViewHolder>() {
+
+    fun updateResults(items: List<JobMatchResult>) {
+        results = items
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(private val binding: ItemRecommendedJobCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -25,13 +32,17 @@ class RecommendedJobAdapter(
             binding.tvCompanyBranch.text = "${job.company} · ${job.branch}"
             val monthlyMin = job.getMonthlySalary()
             val monthlyMax = job.getMonthlySalaryMax()
-            binding.tvSalary.text = if (monthlyMin == monthlyMax) {
+            binding.tvSalary.text = if (monthlyMin == 0 && monthlyMax == 0) {
+                "Salary not disclosed"
+            } else if (monthlyMin == monthlyMax) {
                 "₱${"%,d".format(monthlyMin)}/mo"
             } else {
                 "₱${"%,d".format(monthlyMin)} – ₱${"%,d".format(monthlyMax)}/mo"
             }
+            binding.chipJobType.visibility = if (job.jobType.isNotBlank() && job.jobType != "Not specified") View.VISIBLE else View.GONE
             binding.chipJobType.text = job.jobType
             binding.chipLocation.text = job.location
+            binding.chipCategory.visibility = if (job.category.isNotBlank() && job.category != "Not specified") View.VISIBLE else View.GONE
             binding.chipCategory.text = job.category
 
             // ── Match score badge ─────────────────────────────────────────────

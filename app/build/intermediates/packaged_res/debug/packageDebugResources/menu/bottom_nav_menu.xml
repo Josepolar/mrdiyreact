@@ -12,9 +12,9 @@
         android:title="For You" />
 
     <item
-        android:id="@+id/alertsFragment"
-        android:icon="@drawable/ic_notifications"
-        android:title="Notifications" />
+        android:id="@+id/savedJobsFragment"
+        android:icon="@drawable/ic_bookmark_filled"
+        android:title="Saved Jobs" />
 
     <item
         android:id="@+id/profileFragment"

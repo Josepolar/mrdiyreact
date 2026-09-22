@@ -55,7 +55,10 @@ class SettingsFragment : Fragment() {
         }
 
         binding.btnPrivacy.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://supabase.com/privacy")))
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Your information")
+                .setMessage("Your profile, resume, saved jobs and applications are stored using Supabase. Applications are available to recruitment administrators. You can edit your profile and replace your resume from the Profile screen.")
+                .setPositiveButton("OK", null).show()
         }
 
         binding.btnResumeSettings.setOnClickListener {
@@ -63,7 +66,11 @@ class SettingsFragment : Fragment() {
         }
 
         binding.btnHelp.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:support@mrdiy.com")))
+            try {
+                startActivity(Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:support@mrdiy.com")))
+            } catch (_: android.content.ActivityNotFoundException) {
+                Toast.makeText(requireContext(), "No email app is installed.", Toast.LENGTH_LONG).show()
+            }
         }
 
         binding.btnAbout.setOnClickListener {

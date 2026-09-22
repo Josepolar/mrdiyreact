@@ -184,6 +184,10 @@
         "source": "C:\\Users\\HP\\.gradle\\daemon\\9.4.1\\com.mrdiy.careers.app-main-72:\\drawable\\badge_circle.xml"
     },
     {
+        "merged": "com.mrdiy.careers.app-debug-70:/menu_bottom_nav_menu.xml.flat",
+        "source": "com.mrdiy.careers.app-main-72:/menu/bottom_nav_menu.xml"
+    },
+    {
         "merged": "C:\\Users\\HP\\.gradle\\daemon\\9.4.1\\com.mrdiy.careers.app-debug-70:\\layout_section_profile_card.xml.flat",
         "source": "C:\\Users\\HP\\.gradle\\daemon\\9.4.1\\com.mrdiy.careers.app-main-72:\\layout\\section_profile_card.xml"
     },
@@ -330,10 +334,6 @@
     {
         "merged": "C:\\Users\\HP\\.gradle\\daemon\\9.4.1\\com.mrdiy.careers.app-debug-70:\\mipmap-mdpi_ic_launcher_round.webp.flat",
         "source": "C:\\Users\\HP\\.gradle\\daemon\\9.4.1\\com.mrdiy.careers.app-main-72:\\mipmap-mdpi\\ic_launcher_round.webp"
-    },
-    {
-        "merged": "com.mrdiy.careers.app-debug-70:/layout_fragment_alerts.xml.flat",
-        "source": "com.mrdiy.careers.app-main-72:/layout/fragment_alerts.xml"
     },
     {
         "merged": "C:\\Users\\HP\\.gradle\\daemon\\9.4.1\\com.mrdiy.careers.app-debug-70:\\drawable_bg_step_circle.xml.flat",

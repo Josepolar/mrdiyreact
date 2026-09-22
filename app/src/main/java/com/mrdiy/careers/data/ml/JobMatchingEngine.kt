@@ -50,7 +50,7 @@ object JobMatchingEngine {
                 matchScore = score,
                 matchLabel = getMatchLabel(score),
                 matchReasons = generateMatchReasons(profile, job, score),
-                matchedSkills = findMatchedSkills(profile.skills, job.requirements),
+                matchedSkills = findMatchedSkills(profile.skills, job.requirements + job.aboutRole),
                 missingSkills = findMissingSkills(profile.skills, job.requirements)
             )
         }.sortedByDescending { it.matchScore }
@@ -63,9 +63,13 @@ object JobMatchingEngine {
         return buildString {
             append(profile.skills.joinToString(" ") { it })
             append(" ")
+            append(profile.desiredPosition)
+            append(" ")
             append(profile.headline)
             append(" ")
             append(profile.about)
+            append(" ")
+            append(profile.resumeText)
             append(" ")
             append(profile.workExperiences.joinToString(" ") { exp: WorkExperience -> "${exp.role} ${exp.company} ${exp.description}" })
             append(" ")
@@ -81,9 +85,9 @@ object JobMatchingEngine {
         return buildString {
             append(job.title)
             append(" ")
-            append(job.category)
+            if (job.category != "Not specified") append(job.category)
             append(" ")
-            append(job.level)
+            if (job.level != "Not specified") append(job.level)
             append(" ")
             append(job.aboutRole)
             append(" ")
@@ -99,13 +103,13 @@ object JobMatchingEngine {
     // Step 2: TF-IDF Feature Extraction
     // ─────────────────────────────────────────────────────────────────────
     private fun computeTFIDF(document: String, corpus: List<String>): Map<String, Double> {
-        val words = document.split(Regex("[\\s,.]+")).filter { it.length > 2 }
+        val words = document.split(Regex("[^\\p{L}\\p{N}+#]+")).filter { it.length > 2 }
         val termFreq = words.groupingBy { it }.eachCount()
         val totalDocs = corpus.size
 
         // Calculate IDF for each term
         val idf = words.distinct().associateWith { term ->
-            val docsWithTerm = corpus.count { it.contains(term) }
+            val docsWithTerm = corpus.count { term in it.split(Regex("[^\\p{L}\\p{N}+#]+")) }
             if (docsWithTerm > 0) kotlin.math.ln((totalDocs.toDouble() / docsWithTerm)) + 1 else 0.0
         }
 
@@ -147,12 +151,14 @@ object JobMatchingEngine {
     private fun generateMatchReasons(profile: UserProfile, job: Job, score: Int): List<String> {
         val reasons = mutableListOf<String>()
 
+        if (score == 0) return listOf("No matching profile terms found. Review the job description.")
+
         // Check skill match
         val matchedSkills = profile.skills.map { it.lowercase() }
-        val jobReqs = job.requirements.joinToString(" ").lowercase()
+        val jobReqs = (job.requirements + job.aboutRole).joinToString(" ").lowercase()
         val skillMatches = matchedSkills.filter { jobReqs.contains(it) }
         if (skillMatches.isNotEmpty()) {
-            reasons.add("Matches ${skillMatches.size} required skills")
+            reasons.add("Mentions ${skillMatches.size} of your skills")
         }
 
         // Check experience level
@@ -170,7 +176,7 @@ object JobMatchingEngine {
             reasons.add("Matches preferred level")
         }
 
-        return reasons.ifEmpty { listOf("Based on overall profile fit") }
+        return reasons.ifEmpty { listOf("Based on shared terms in your profile and this job") }
     }
 
     private fun findMatchedSkills(userSkills: List<String>, jobRequirements: List<String>): List<String> {

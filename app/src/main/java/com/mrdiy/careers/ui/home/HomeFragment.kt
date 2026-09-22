@@ -62,6 +62,7 @@ class HomeFragment : Fragment() {
         super.onResume()
 
         viewModel.loadSavedJobIds()
+        viewModel.fetchJobsFromApi()
     }
 
     // ───────────────── Greeting ─────────────────
@@ -157,6 +158,7 @@ class HomeFragment : Fragment() {
 
         binding.btnFilter.setOnClickListener {
 
+            binding.chipAll.isChecked = true
             viewModel.clearFilters()
 
             binding.searchInput
@@ -267,6 +269,9 @@ class HomeFragment : Fragment() {
     // ───────────────── Observers ─────────────────
 
     private fun observeViewModel() {
+        viewModel.appliedCount.observe(viewLifecycleOwner) { binding.tvStatApplied.text = it.toString() }
+        binding.tvStatApplied.setOnClickListener { findNavController().navigate(R.id.applicationsFragment) }
+        binding.tvStatSaved.setOnClickListener { findNavController().navigate(R.id.savedJobsFragment) }
 
         viewModel.filteredJobs.observe(
             viewLifecycleOwner

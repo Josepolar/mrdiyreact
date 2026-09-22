@@ -3,13 +3,19 @@ package com.mrdiy.careers.ui.jobs
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mrdiy.careers.data.repository.JobRepository
+import com.mrdiy.careers.data.repository.PublishedJobsRepository
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import com.mrdiy.careers.model.Job
 import com.mrdiy.careers.data.search.UniversalJobSearchEngine
 
 class JobsViewModel : ViewModel() {
 
-    private val allJobs = JobRepository.getJobs()
+    private var allJobs: List<Job> = emptyList()
+    val errorMessage = MutableLiveData<String?>()
+    private var refreshing = false
+    private val repository = PublishedJobsRepository()
 
     private val _filteredJobs = MutableLiveData<List<Job>>()
     val filteredJobs: LiveData<List<Job>> get() = _filteredJobs
@@ -21,7 +27,30 @@ class JobsViewModel : ViewModel() {
     private var maxSalary: Int = 100000
 
     init {
-        applyFilters()
+        viewModelScope.launch {
+            while (true) {
+                refresh()
+                delay(60_000)
+            }
+        }
+    }
+
+    fun reload() { viewModelScope.launch { refresh() } }
+
+    private suspend fun refresh() {
+        if (refreshing) return
+        refreshing = true
+        try {
+        repository.fetchOpenJobs().onSuccess {
+            allJobs = it
+            errorMessage.value = null
+            applyFilters()
+        }.onFailure {
+            allJobs = emptyList()
+            applyFilters()
+            errorMessage.value = "Unable to load published jobs. Please retry."
+        }
+        } finally { refreshing = false }
     }
 
     fun onSearchQuery(query: String?) {
@@ -76,7 +105,7 @@ class JobsViewModel : ViewModel() {
 
         // Salary
         filtered = filtered.filter {
-            it.salaryMax >= minSalary && it.salaryMin <= maxSalary
+            it.getMonthlySalaryMax() >= minSalary && it.getMonthlySalary() <= maxSalary
         }
 
         _filteredJobs.value = filtered

@@ -69,6 +69,10 @@ class AuthManager(private val context: Context) {
         prefs.edit().putBoolean(KEY_IS_LOGGED_IN, isLoggedIn).apply()
     }
 
+    fun clearDemoSession() {
+        if (getCurrentUserId() == "debug-demo-user") prefs.edit().clear().apply()
+    }
+
     fun enableDemoSession() {
         prefs.edit()
             .putBoolean(KEY_IS_LOGGED_IN, true)

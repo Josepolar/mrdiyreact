@@ -1,6 +1,8 @@
 package com.mrdiy.careers.ui.savedjobs
 
+import androidx.core.view.isVisible
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.mrdiy.careers.databinding.ItemSavedJobCardBinding
@@ -32,8 +34,10 @@ class SavedJobAdapter(
             } else {
                 "₱${"%,d".format(monthlyMin)} – ₱${"%,d".format(monthlyMax)}/mo"
             }
+            binding.chipJobType.visibility = if (job.jobType.isNotBlank() && job.jobType != "Not specified") View.VISIBLE else View.GONE
             binding.chipJobType.text = job.jobType
             binding.chipLocation.text = job.location
+            binding.chipCategory.visibility = if (job.category.isNotBlank() && job.category != "Not specified") View.VISIBLE else View.GONE
             binding.chipCategory.text = job.category
 
             binding.jobCard.setOnClickListener { onJobClick(job) }

@@ -12,6 +12,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.Json
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -68,6 +71,7 @@ data class UserProfileRow(
     val phone: String?                                              = null,
     val about: String?                                              = null,
     val skills: String?                                             = null,
+    @SerialName("work_experiences") val workExperiences: JsonElement? = null,
     val headline: String?                                           = null,
     @SerialName("resume_text")       val resumeText: String?        = null,
     @SerialName("resume_file_name")  val resumeFileName: String?    = null,
@@ -96,8 +100,9 @@ class ProfileRepository(private val context: Context) {
         phone             = phone,
         about             = about,
         skills            = skills.joinToString(","),
+        workExperiences   = json.parseToJsonElement(json.encodeToString(workExperiences)),
         headline          = headline,
-        resumeText        = null,
+        resumeText        = resumeText,
         resumeFileName    = resumeName,
         resumeUrl         = resumeUrl
     )
@@ -116,11 +121,16 @@ class ProfileRepository(private val context: Context) {
             phone             = phone             ?: "",
             location          = location          ?: "",
             desiredPosition   = desiredPosition   ?: "",
+            workExperiences = runCatching { json.decodeFromString<List<com.mrdiy.careers.model.WorkExperience>>(
+                (workExperiences as? JsonPrimitive)?.content ?: workExperiences?.toString() ?: "[]") }.getOrDefault(emptyList()),
+            photoPath = loadFromPrefs(userId).photoPath,
+            education = loadFromPrefs(userId).education,
             headline          = headline          ?: "",
             about             = about             ?: "",
             skills            = (skills ?: "").split(",")
                 .map { it.trim() }.filter { it.isNotBlank() },
             yearsOfExperience = yearsExperience?.toIntOrNull() ?: 0,
+            resumeText        = resumeText ?: "",
             resumeUrl         = resumeUrl         ?: "",
             resumeName        = resumeFileName    ?: "",
             resumeUploadedAt  = ""
@@ -139,9 +149,8 @@ class ProfileRepository(private val context: Context) {
             return
         }
 
-        saveLocally(uid, profile)
-
         if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE && uid == "debug-demo-user") {
+            saveLocally(uid, profile)
             onComplete?.invoke(true)
             return
         }
@@ -151,6 +160,7 @@ class ProfileRepository(private val context: Context) {
                 val client = SupabaseProvider.client
                 val row    = profile.toRow(uid)
                 client.from("profiles").upsert(row) { onConflict = "user_id" }
+                saveLocally(uid, profile)
                 Log.d("ProfileRepo", "Upsert successful uid=$uid")
                 withContext(Dispatchers.Main) { onComplete?.invoke(true) }
             } catch (e: Exception) {
@@ -167,6 +177,7 @@ class ProfileRepository(private val context: Context) {
         val uid = userId.ifEmpty { getCurrentUserId() }
 
         if (uid.isEmpty()) { onResult(null); return }
+        if (BuildConfig.DEBUG && BuildConfig.DEMO_MODE && uid == "debug-demo-user") { onResult(loadFromPrefs(uid)); return }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -210,6 +221,10 @@ class ProfileRepository(private val context: Context) {
             putString("about",            profile.about)
             putString("skills",           profile.skills.joinToString(","))
             putInt   ("years_experience", profile.yearsOfExperience)
+            putString("work_experiences", json.encodeToString(profile.workExperiences))
+            putString("education", json.encodeToString(profile.education))
+            putString("photo_path", profile.photoPath)
+            putString("resume_text",       profile.resumeText)
             putString("resume_url",        profile.resumeUrl)
             putString("resume_name",       profile.resumeName)
             apply()
@@ -236,6 +251,10 @@ class ProfileRepository(private val context: Context) {
             about             = p.getString("about",            "") ?: "",
             skills            = skillsRaw.split(",").map { it.trim() }.filter { it.isNotBlank() },
             yearsOfExperience = p.getInt("years_experience", 0),
+            workExperiences = runCatching { json.decodeFromString<List<com.mrdiy.careers.model.WorkExperience>>(p.getString("work_experiences", "[]") ?: "[]") }.getOrDefault(emptyList()),
+            education = runCatching { json.decodeFromString<List<com.mrdiy.careers.model.Education>>(p.getString("education", "[]") ?: "[]") }.getOrDefault(emptyList()),
+            photoPath = p.getString("photo_path", "") ?: "",
+            resumeText        = p.getString("resume_text", "") ?: "",
             resumeUrl         = p.getString("resume_url",       "") ?: "",
             resumeName        = p.getString("resume_name",      "") ?: "",
             resumeUploadedAt = ""
@@ -248,13 +267,14 @@ class ProfileRepository(private val context: Context) {
         userId: String,
         resumeName: String,
         resumeUrl: String,
+        extractedProfile: UserProfile? = null,
+        extractedText: String? = null,
         onComplete: ((Boolean, String?) -> Unit)? = null
     ) {
         if (userId.isEmpty()) {
             onComplete?.invoke(false, "No user ID")
             return
         }
-        saveResumeFieldsLocally(userId, resumeName, resumeUrl)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val client = SupabaseProvider.client
@@ -265,22 +285,25 @@ class ProfileRepository(private val context: Context) {
                 } catch (e: Exception) {
                     null
                 }
+                val base = existingRow ?: loadFromPrefs(userId).toRow(userId)
+                val mergedSkills = (base.skills.orEmpty().split(",") + extractedProfile?.skills.orEmpty())
+                    .map { it.trim() }.filter { it.isNotEmpty() }.distinctBy { it.lowercase() }
+                val row = base.copy(
+                    resumeUrl = resumeUrl,
+                    resumeFileName = resumeName,
+                    resumeText = extractedText ?: base.resumeText,
+                    skills = mergedSkills.joinToString(","),
+                    yearsExperience = maxOf(base.yearsExperience?.toIntOrNull() ?: 0,
+                        extractedProfile?.yearsOfExperience ?: 0).toString()
+                )
                 if (existingRow != null) {
-                    val row = existingRow.copy(
-                        resumeUrl = resumeUrl,
-                        resumeFileName = resumeName
-                    )
                     client.from("profiles").update(row) {
                         filter { eq("user_id", userId) }
                     }
                 } else {
-                    val row = UserProfileRow(
-                        userId = userId,
-                        resumeUrl = resumeUrl,
-                        resumeFileName = resumeName
-                    )
                     client.from("profiles").insert(row)
                 }
+                saveLocally(userId, row.toDomain())
                 withContext(Dispatchers.Main) { onComplete?.invoke(true, null) }
             } catch (e: Exception) {
                 Log.e("ProfileRepo", "saveResumeFields failed: ${e.message}", e)

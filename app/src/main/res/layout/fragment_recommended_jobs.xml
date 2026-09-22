@@ -100,6 +100,7 @@
 
                     <View
                         android:id="@+id/notification_badge"
+                        android:visibility="gone"
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_gravity="top|end"
@@ -171,7 +172,7 @@
                         android:id="@+id/btn_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Filter"
+                        android:text="Clear"
                         android:textSize="11sp"
                         android:textColor="@color/text_muted"
                         android:textStyle="bold" />
@@ -227,6 +228,7 @@
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chip_fulltime"
+                            android:visibility="gone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Full-time"
@@ -234,6 +236,7 @@
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chip_parttime"
+                            android:visibility="gone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Part-time"
@@ -318,7 +321,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Resume Missing"
+                    android:text="No matching jobs to show"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -327,7 +330,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upload your resume to get AI-powered job recommendations matched to your skills."
+                    android:text="Try clearing your filters or check back for published jobs. Add a resume to improve matching."
                     android:textSize="13sp"
                     android:textColor="@color/text_muted"
                     android:gravity="center"
@@ -388,7 +391,7 @@
                     android:id="@+id/tv_loading_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AI is matching jobs..."
+                    android:text="Matching published jobs..."
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp"
                     android:layout_marginTop="12dp" />

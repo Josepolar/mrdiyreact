@@ -32,16 +32,19 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         authManager = AuthManager(requireContext())
+        if (findNavController().currentDestination?.id != R.id.loginFragment) return
 
         if (authManager.isLoggedIn) {
             checkProfileAndNavigate()
             return
         }
 
+        binding.cardFacebook.visibility = View.GONE
         setupClickListeners()
     }
 
 private fun checkProfileAndNavigate() {
+        if (!isAdded || _binding == null || findNavController().currentDestination?.id != R.id.loginFragment) return
         val authPrefs = requireContext()
             .getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         val userId = authPrefs.getString("user_id", "") ?: ""
@@ -62,7 +65,7 @@ private fun checkProfileAndNavigate() {
         // 2️⃣ Supabase fallback – if profile exists with real data, save to cache and go Home
         val repo = ProfileRepository(requireContext())
         repo.loadProfile(userId) { profile ->
-            if (!isAdded || view == null) return@loadProfile
+            if (!isAdded || _binding == null || findNavController().currentDestination?.id != R.id.loginFragment) return@loadProfile
             if (profile != null && profile.fullName.isNotBlank()) {
                 navigateToHome()
             } else {
@@ -74,13 +77,14 @@ private fun checkProfileAndNavigate() {
     private fun setupClickListeners() {
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text?.trim().toString()
-            val password = binding.etPassword.text?.trim().toString()
+            val password = binding.etPassword.text?.toString().orEmpty()
 
             if (validateInput(email, password)) {
                 binding.progressBar.isVisible = true
                 binding.btnLogin.isEnabled = false
 
                 authManager.login(email, password) { success, message ->
+                    if (!isAdded || _binding == null) return@login
                     binding.progressBar.isVisible = false
                     binding.btnLogin.isEnabled = true
 
@@ -159,7 +163,7 @@ binding.cardPhone.setOnClickListener {
     }
 
     private fun navigateToHome() {
-        if (!isAdded || view == null) return
+        if (!isAdded || view == null || findNavController().currentDestination?.id != R.id.loginFragment) return
         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
     }
 

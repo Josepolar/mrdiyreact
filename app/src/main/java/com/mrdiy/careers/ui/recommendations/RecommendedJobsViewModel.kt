@@ -6,8 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.mrdiy.careers.data.repository.PhpJobRepository
-import com.mrdiy.careers.data.repository.JobRepository
+import com.mrdiy.careers.data.repository.PublishedJobsRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
 import com.mrdiy.careers.data.repository.ProfileRepository
 import com.mrdiy.careers.data.ml.HybridMatchingService
@@ -19,11 +18,15 @@ import kotlinx.coroutines.launch
 class RecommendedJobsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val savedJobsRepository = SavedJobsRepository(application)
-    private val phpJobRepository = PhpJobRepository()
+    private val publishedJobsRepository = PublishedJobsRepository()
     private val profileRepository = ProfileRepository(application)
 
+    val description = MutableLiveData<String>()
+    val hasMatchingProfile = MutableLiveData(false)
+    val matchResults = MutableLiveData<List<com.mrdiy.careers.model.JobMatchResult>>()
+    private var rankedResults = emptyList<com.mrdiy.careers.model.JobMatchResult>()
+
     private var allJobs: List<Job> = emptyList()
-    private val fallbackJobs = JobRepository.getJobs()
 
     private val _filteredJobs = MutableLiveData<List<Job>>()
     val filteredJobs: LiveData<List<Job>> get() = _filteredJobs
@@ -46,6 +49,7 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
 
     private var autoRefreshJob: KJob? = null
     private var searchJob: KJob? = null
+    private var fetchJob: KJob? = null
 
     init {
         _filteredJobs.value = emptyList()
@@ -59,22 +63,23 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun fetchJobsFromApi() {
-        viewModelScope.launch {
+        if (fetchJob?.isActive == true) return
+        fetchJob = viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
 
-            phpJobRepository.fetchOpenJobs()
+            publishedJobsRepository.fetchOpenJobs()
                 .onSuccess { apiJobs ->
                     Log.d("RecommendedJobsVM", "API returned ${apiJobs.size} jobs")
-                    allJobs = rankJobs(apiJobs.ifEmpty { fallbackJobs })
+                    allJobs = rankJobs(apiJobs)
                     _isLoading.value = false
                     applyFilters()
                 }
                 .onFailure { e ->
                     Log.e("RecommendedJobsVM", "API failed: ${e.message}")
                     _isLoading.value = false
-                    allJobs = rankJobs(fallbackJobs)
-                    _errorMessage.value = "Live recommendations are unavailable. Showing available jobs instead."
+                    allJobs = emptyList()
+                    _errorMessage.value = "Unable to load recommendations. Please retry."
                     applyFilters()
                 }
         }
@@ -85,12 +90,7 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
         autoRefreshJob = viewModelScope.launch {
             while (true) {
                 delay(60_000)
-                phpJobRepository.fetchOpenJobs()
-                    .onSuccess { apiJobs ->
-                        allJobs = rankJobs(apiJobs.ifEmpty { fallbackJobs })
-                        applyFilters()
-                        loadSavedJobIds()
-                    }
+                fetchJobsFromApi()
             }
         }
     }
@@ -154,11 +154,13 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
 
     private fun rankJobs(jobs: List<Job>): List<Job> {
         val profile = profileRepository.loadFromPrefs()
-        if (profile.skills.isEmpty() && profile.about.isBlank() && profile.desiredPosition.isBlank()) {
-            return jobs
-        }
-        return HybridMatchingService.matchJobsToProfile(profile, jobs)
-            .map { it.job }
+        hasMatchingProfile.value = profile.skills.isNotEmpty() || profile.desiredPosition.isNotBlank() ||
+            profile.about.isNotBlank() || profile.headline.isNotBlank() || profile.workExperiences.isNotEmpty()
+        description.value = if (hasMatchingProfile.value == true)
+            "Published jobs ranked by similarity to your profile. Scores are text similarity, not hiring probabilities."
+        else "Add your skills or desired position, or upload a resume to personalize these jobs."
+        rankedResults = HybridMatchingService.matchJobsToProfile(profile, jobs)
+        return rankedResults.map { it.job }
     }
 
     private fun applyFilters() {
@@ -185,6 +187,8 @@ class RecommendedJobsViewModel(application: Application) : AndroidViewModel(appl
         }
 
         _filteredJobs.value = filtered
+        val ids = filtered.map { it.id }.toSet()
+        matchResults.value = rankedResults.filter { it.job.id in ids }
     }
 
     override fun onCleared() {
