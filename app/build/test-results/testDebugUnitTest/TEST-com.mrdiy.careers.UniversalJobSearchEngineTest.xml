@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.mrdiy.careers.UniversalJobSearchEngineTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-22T14:08:50.460Z" hostname="JOSE-VICTUS" time="0.031">
+  <properties/>
+  <testcase name="cashierFindsRelatedRetailRole" classname="com.mrdiy.careers.UniversalJobSearchEngineTest" time="0.027"/>
+  <testcase name="professionalAndManagementRolesRemainSearchable" classname="com.mrdiy.careers.UniversalJobSearchEngineTest" time="0.001"/>
+  <testcase name="typoIsTolerated" classname="com.mrdiy.careers.UniversalJobSearchEngineTest" time="0.0"/>
+  <testcase name="jobFamiliesCoverNonTechnicalRoles" classname="com.mrdiy.careers.UniversalJobSearchEngineTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
