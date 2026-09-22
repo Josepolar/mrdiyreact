@@ -135,8 +135,15 @@ class AuthManager(private val context: Context) {
                     this.email = email
                     this.password = password
                 }
+                // Supabase normally sends this during sign-up. Request a resend as a
+                // fallback for projects whose SMTP provider accepted the user row but
+                // dropped the first delivery attempt. Rate-limit errors are ignored;
+                // the verification screen still exposes a manual resend action.
+                runCatching {
+                    client.auth.resendEmail(OtpType.Email.SIGNUP, email)
+                }
                 withContext(Dispatchers.Main) {
-                    callback(true, "Registration successful. Please check your email for verification.")
+                    callback(true, "Account created. Check your email (including spam) for the verification link.")
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
