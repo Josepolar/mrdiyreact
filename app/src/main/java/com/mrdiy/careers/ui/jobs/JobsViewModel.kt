@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mrdiy.careers.data.repository.JobRepository
 import com.mrdiy.careers.model.Job
+import com.mrdiy.careers.data.search.UniversalJobSearchEngine
 
 class JobsViewModel : ViewModel() {
 
@@ -58,12 +59,8 @@ class JobsViewModel : ViewModel() {
 
         // Search Query
         currentSearchQuery?.let { query ->
-            if (query.isNotEmpty()) {
-                filtered = filtered.filter {
-                    it.title.contains(query, ignoreCase = true) ||
-                            it.company.contains(query, ignoreCase = true) ||
-                            it.branch.contains(query, ignoreCase = true)
-                }
+            if (query.isNotBlank()) {
+                filtered = UniversalJobSearchEngine.search(query, filtered).map { it.job }
             }
         }
 

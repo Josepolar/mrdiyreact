@@ -10,6 +10,7 @@ import com.mrdiy.careers.data.repository.JobRepository
 import com.mrdiy.careers.data.repository.PhpJobRepository
 import com.mrdiy.careers.data.repository.SavedJobsRepository
 import com.mrdiy.careers.model.Job
+import com.mrdiy.careers.data.search.UniversalJobSearchEngine
 import kotlinx.coroutines.Job as KJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -153,11 +154,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         var filtered = allJobs
 
         if (!currentSearchQuery.isNullOrEmpty()) {
-            filtered = filtered.filter { job ->
-                job.title.contains(currentSearchQuery!!, ignoreCase = true) ||
-                job.company.contains(currentSearchQuery!!, ignoreCase = true) ||
-                job.branch.contains(currentSearchQuery!!, ignoreCase = true)
-            }
+            filtered = UniversalJobSearchEngine.search(currentSearchQuery!!, filtered).map { it.job }
         }
 
         if (!currentJobTypeFilter.isNullOrEmpty()) {

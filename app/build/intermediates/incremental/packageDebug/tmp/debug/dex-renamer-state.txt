@@ -1,4 +1,4 @@
-#Tue Sep 22 21:00:07 PST 2026
+#Tue Sep 22 21:08:13 PST 2026
 base.0=C\:\\xampp\\htdocs\\lars-dazsma-nextjs\\mrdiyreact\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\xampp\\htdocs\\lars-dazsma-nextjs\\mrdiyreact\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.10=C\:\\xampp\\htdocs\\lars-dazsma-nextjs\\mrdiyreact\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
