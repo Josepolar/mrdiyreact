@@ -163,10 +163,6 @@ class ProfileRepository(private val context: Context) {
                     put("years_experience", JsonPrimitive(profile.yearsOfExperience.toString()))
                     put("email", JsonPrimitive(profile.email))
                     put("phone", JsonPrimitive(profile.phone))
-                    put("about", JsonPrimitive(profile.about))
-                    put("skills", JsonPrimitive(profile.skills.joinToString(",")))
-                    put("work_experiences", json.parseToJsonElement(json.encodeToString(profile.workExperiences)))
-                    put("headline", JsonPrimitive(profile.headline))
                 }
                 client.from("profiles").upsert(payload) { onConflict = "user_id" }
                 saveLocally(uid, profile)
