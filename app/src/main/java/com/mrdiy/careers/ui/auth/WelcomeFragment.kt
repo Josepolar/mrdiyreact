@@ -15,6 +15,7 @@ import com.mrdiy.careers.R
 import com.mrdiy.careers.data.auth.SupabaseProvider
 import com.mrdiy.careers.databinding.FragmentWelcomeBinding
 import com.mrdiy.careers.model.UserProfile
+import com.mrdiy.careers.data.repository.ProfileRepository
 import com.mrdiy.careers.ui.profile.ProfileViewModel
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.Dispatchers
@@ -106,7 +107,12 @@ private fun setupDropdowns() {
             binding.btnContinue.isEnabled = true
 
             if (success == true) {
-                Toast.makeText(requireContext(), "Profile saved!", Toast.LENGTH_SHORT).show()
+                val pending = ProfileRepository(requireContext()).isProfileSyncPending(userId)
+                Toast.makeText(
+                    requireContext(),
+                    if (pending) "Profile saved on this device. We'll sync it when connected." else "Profile saved!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 navigateToHome()
             } else {
                 Toast.makeText(requireContext(), "Failed to save profile. Please try again.", Toast.LENGTH_SHORT).show()

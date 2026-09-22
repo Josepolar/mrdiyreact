@@ -176,13 +176,22 @@ class ProfileRepository(private val context: Context) {
                     client.from("profiles").update(payload) { filter { eq("user_id", uid) } }
                 }
                 saveLocally(uid, profile)
+                context.getSharedPreferences("profile_$uid", Context.MODE_PRIVATE)
+                    .edit().putBoolean("profile_sync_pending", false).apply()
                 withContext(Dispatchers.Main) { onComplete?.invoke(true) }
             } catch (e: Exception) {
                 com.mrdiy.careers.data.SafeDiagnostics.record("backend_request", e)
-                withContext(Dispatchers.Main) { onComplete?.invoke(false) }
+                saveLocally(uid, profile)
+                context.getSharedPreferences("profile_$uid", Context.MODE_PRIVATE)
+                    .edit().putBoolean("profile_sync_pending", true).apply()
+                withContext(Dispatchers.Main) { onComplete?.invoke(true) }
             }
         }
     }
+
+    fun isProfileSyncPending(userId: String = getCurrentUserId()): Boolean =
+        userId.isNotBlank() && context.getSharedPreferences("profile_$userId", Context.MODE_PRIVATE)
+            .getBoolean("profile_sync_pending", false)
 
     // ─────────────────────────────────────────────────────────────────────────
     // LOAD
