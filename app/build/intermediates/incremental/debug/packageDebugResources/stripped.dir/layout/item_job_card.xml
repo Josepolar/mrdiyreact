@@ -9,7 +9,7 @@
     android:clickable="true"
     android:focusable="true"
     app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="12dp"
+    app:cardCornerRadius="8dp"
     app:cardElevation="0dp"
     app:strokeColor="@color/border_light"
     app:strokeWidth="1dp"
@@ -33,7 +33,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:cardBackgroundColor="@color/orange_light"
+                app:cardBackgroundColor="@color/brand_yellow"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="0dp">
 
@@ -42,7 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="DIY"
-                    android:textColor="@color/orange_primary"
+                    android:textColor="@color/brand_black"
                     android:textSize="10sp"
                     android:textStyle="bold"
                     android:gravity="center" />
@@ -84,8 +84,8 @@
             <!-- Save Button -->
             <ImageButton
                 android:id="@+id/btn_save_job"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                 android:src="@drawable/ic_bookmark_outline"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:tint="@color/text_muted"

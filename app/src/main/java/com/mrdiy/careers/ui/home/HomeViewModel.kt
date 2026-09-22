@@ -19,7 +19,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val savedJobsRepository = SavedJobsRepository(application)
     private val phpJobRepository = PhpJobRepository()
 
-    private var allJobs: List<Job> = JobRepository.getJobs()
+    private val fallbackJobs: List<Job> = JobRepository.getJobs()
+    private var allJobs: List<Job> = fallbackJobs
 
     private val _filteredJobs = MutableLiveData<List<Job>>()
     val filteredJobs: LiveData<List<Job>> get() = _filteredJobs
@@ -41,6 +42,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private var currentLocationFilter: String? = null
 
     private var autoRefreshJob: KJob? = null
+    private var searchJob: KJob? = null
 
     init {
         Log.d("HomeViewModel", "Init started, setting hardcoded jobs first")
@@ -59,14 +61,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             phpJobRepository.fetchOpenJobs()
                 .onSuccess { apiJobs ->
                     Log.d("HomeViewModel", "API returned ${apiJobs.size} jobs")
-                    allJobs = apiJobs
+                    allJobs = apiJobs.ifEmpty { fallbackJobs }
                     _isLoading.value = false
                     applyFilters()
                 }
                 .onFailure { e ->
                     Log.e("HomeViewModel", "API failed: ${e.message}")
+                    allJobs = fallbackJobs
                     _isLoading.value = false
-                    _errorMessage.value = "Could not load live jobs: ${e.message}"
+                    _errorMessage.value = "Live jobs are unavailable. Showing available jobs instead."
+                    applyFilters()
                 }
         }
     }
@@ -78,7 +82,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 delay(60_000)
                 phpJobRepository.fetchOpenJobs()
                     .onSuccess { apiJobs ->
-                        allJobs = apiJobs
+                        allJobs = apiJobs.ifEmpty { fallbackJobs }
                         applyFilters()
                         loadSavedJobIds()
                     }
@@ -96,7 +100,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onSearchQuery(query: String?) {
         currentSearchQuery = query
-        applyFilters()
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(250)
+            applyFilters()
+        }
     }
 
     fun onJobTypeFilter(jobType: String?) {
@@ -170,5 +178,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         autoRefreshJob?.cancel()
+        searchJob?.cancel()
     }
 }

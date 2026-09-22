@@ -12,5 +12,5 @@ public final class BuildConfig {
   // Field from default config.
   public static final String CLAUDE_API_KEY = "";
   // Field from default config.
-  public static final boolean DEMO_MODE = false;
+  public static final boolean DEMO_MODE = true;
 }

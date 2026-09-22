@@ -12,9 +12,10 @@
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="android:colorBackground">@color/bg_primary</item>
         <item name="colorError">@color/red_error</item>
-        <item name="android:statusBarColor">@color/orange_primary</item>
-        <item name="android:navigationBarColor">@color/white</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:statusBarColor">@color/brand_yellow</item>
+        <item name="android:navigationBarColor">@color/brand_black</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
     <!-- ===================== Toolbar ===================== -->

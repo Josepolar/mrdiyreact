@@ -11,7 +11,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/orange_primary"
+        android:background="@color/brand_yellow"
         app:elevation="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,7 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="MR.D.I.Y."
-                    android:textColor="@color/white"
+                    android:textColor="@color/brand_black"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:letterSpacing="0.05" />
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="CAREERS"
-                    android:textColor="#CCFFFFFF"
+                    android:textColor="#CC1B1B1B"
                     android:textSize="9sp"
                     android:letterSpacing="0.1" />
 

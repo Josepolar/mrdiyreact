@@ -48,6 +48,9 @@ public final class FragmentLoginBinding implements ViewBinding {
   public final ImageView ivLogo;
 
   @NonNull
+  public final MaterialCardView loginFormPanel;
+
+  @NonNull
   public final ProgressBar progressBar;
 
   @NonNull
@@ -81,10 +84,11 @@ public final class FragmentLoginBinding implements ViewBinding {
       @NonNull MaterialCardView cardFacebook, @NonNull MaterialCardView cardGoogle,
       @NonNull MaterialCardView cardPhone, @NonNull TextInputEditText etEmail,
       @NonNull TextInputEditText etPassword, @NonNull ImageView ivLogo,
-      @NonNull ProgressBar progressBar, @NonNull LinearLayout socialButtons,
-      @NonNull TextInputLayout tilEmail, @NonNull TextInputLayout tilPassword,
-      @NonNull TextView tvAppName, @NonNull TextView tvForgotPassword, @NonNull TextView tvOr,
-      @NonNull TextView tvPhoneLogin, @NonNull TextView tvRegister, @NonNull TextView tvWelcome) {
+      @NonNull MaterialCardView loginFormPanel, @NonNull ProgressBar progressBar,
+      @NonNull LinearLayout socialButtons, @NonNull TextInputLayout tilEmail,
+      @NonNull TextInputLayout tilPassword, @NonNull TextView tvAppName,
+      @NonNull TextView tvForgotPassword, @NonNull TextView tvOr, @NonNull TextView tvPhoneLogin,
+      @NonNull TextView tvRegister, @NonNull TextView tvWelcome) {
     this.rootView = rootView;
     this.btnLogin = btnLogin;
     this.cardFacebook = cardFacebook;
@@ -93,6 +97,7 @@ public final class FragmentLoginBinding implements ViewBinding {
     this.etEmail = etEmail;
     this.etPassword = etPassword;
     this.ivLogo = ivLogo;
+    this.loginFormPanel = loginFormPanel;
     this.progressBar = progressBar;
     this.socialButtons = socialButtons;
     this.tilEmail = tilEmail;
@@ -174,6 +179,12 @@ public final class FragmentLoginBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.login_form_panel;
+      MaterialCardView loginFormPanel = ViewBindings.findChildViewById(rootView, id);
+      if (loginFormPanel == null) {
+        break missingId;
+      }
+
       id = R.id.progressBar;
       ProgressBar progressBar = ViewBindings.findChildViewById(rootView, id);
       if (progressBar == null) {
@@ -235,8 +246,9 @@ public final class FragmentLoginBinding implements ViewBinding {
       }
 
       return new FragmentLoginBinding((ConstraintLayout) rootView, btnLogin, cardFacebook,
-          cardGoogle, cardPhone, etEmail, etPassword, ivLogo, progressBar, socialButtons, tilEmail,
-          tilPassword, tvAppName, tvForgotPassword, tvOr, tvPhoneLogin, tvRegister, tvWelcome);
+          cardGoogle, cardPhone, etEmail, etPassword, ivLogo, loginFormPanel, progressBar,
+          socialButtons, tilEmail, tilPassword, tvAppName, tvForgotPassword, tvOr, tvPhoneLogin,
+          tvRegister, tvWelcome);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

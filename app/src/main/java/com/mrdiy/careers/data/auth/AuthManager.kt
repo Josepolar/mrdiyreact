@@ -81,6 +81,10 @@ class AuthManager(private val context: Context) {
             .remove(KEY_USER_NAME)
             .remove(KEY_USER_ID)
             .apply()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching { client.auth.signOut() }
+        }
     }
 
     fun login(email: String, password: String, callback: (Boolean, String) -> Unit) {
@@ -109,7 +113,7 @@ class AuthManager(private val context: Context) {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    callback(false, "Login failed: ${e.message}")
+                    callback(false, readableAuthError(e))
                 }
             }
         }
@@ -127,7 +131,7 @@ class AuthManager(private val context: Context) {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    callback(false, "Registration failed: ${e.message}")
+                    callback(false, "Registration failed. Check your details and try again.")
                 }
             }
         }
@@ -139,7 +143,7 @@ class AuthManager(private val context: Context) {
                 client.auth.signInWith(Google)
                 callback(true, "Opening Google sign-in...")
             } catch (e: Exception) {
-                callback(false, "Google sign-in failed: ${e.message}")
+                callback(false, "Google sign-in could not start. Please try again.")
             }
         }
     }
@@ -163,9 +167,22 @@ class AuthManager(private val context: Context) {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    callback(false, "Failed to send reset email: ${e.message}")
+                    callback(false, "We could not send the reset email. Please try again.")
                 }
             }
+        }
+    }
+
+    private fun readableAuthError(error: Exception): String {
+        val message = error.message.orEmpty().lowercase()
+        return when {
+            "invalid login" in message || "invalid credentials" in message ->
+                "Email or password is incorrect."
+            "email not confirmed" in message ->
+                "Please confirm your email before signing in."
+            "network" in message || "timeout" in message ->
+                "Connection problem. Check your internet and try again."
+            else -> "Login failed. Check your details and try again."
         }
     }
 }

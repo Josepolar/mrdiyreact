@@ -11,7 +11,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/orange_primary"
+        android:background="@color/brand_black"
         app:elevation="0dp">
 
         <!-- Toolbar -->
@@ -21,9 +21,9 @@
             android:layout_height="?attr/actionBarSize"
             android:paddingHorizontal="4dp"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/white"
+            app:navigationIconTint="@color/brand_yellow"
             app:title="Job Details"
-            app:titleTextColor="@color/white"
+            app:titleTextColor="@color/brand_yellow"
             app:titleTextAppearance="@style/ToolbarTitle">
 
             <ImageButton
@@ -34,7 +34,7 @@
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_share"
                 android:background="@drawable/circle_white_20"
-                android:tint="@color/white"
+                android:tint="@color/brand_yellow"
                 android:contentDescription="Share job"
                 android:padding="8dp" />
 

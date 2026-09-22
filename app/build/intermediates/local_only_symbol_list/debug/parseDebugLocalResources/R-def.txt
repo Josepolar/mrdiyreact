@@ -13,6 +13,9 @@ color blue_light
 color blue_primary
 color border_light
 color bottom_nav_selector
+color brand_black
+color brand_cream
+color brand_yellow
 color chip_filter_bg_selector
 color chip_filter_stroke_selector
 color chip_filter_text_selector
@@ -247,6 +250,7 @@ id jobs_recycler
 id loadingGroup
 id loading_group
 id loginFragment
+id login_form_panel
 id logo_card
 id logo_image
 id main_container

@@ -5,11 +5,14 @@
         <item>100000</item>
     </integer-array>
     <color name="badge_red">#EF4444</color>
-    <color name="bg_primary">#F9FAFB</color>
-    <color name="bg_secondary">#F3F4F6</color>
+    <color name="bg_primary">#FAF8F0</color>
+    <color name="bg_secondary">#F1EFE5</color>
     <color name="blue_light">#DBEAFE</color>
     <color name="blue_primary">#3B82F6</color>
-    <color name="border_light">#E5E7EB</color>
+    <color name="border_light">#DDD9CA</color>
+    <color name="brand_black">#1B1B1B</color>
+    <color name="brand_cream">#FAF8F0</color>
+    <color name="brand_yellow">#FFD400</color>
     <color name="chip_skill_matched_bg">#E0F2FE</color>
     <color name="chip_skill_matched_text">#0369A1</color>
     <color name="colorBackground">@color/bg_primary</color>
@@ -33,17 +36,17 @@
     <color name="match_good_text">#1E40AF</color>
     <color name="match_low_bg">#F3F4F6</color>
     <color name="match_low_text">#4B5563</color>
-    <color name="nav_active">@color/orange_primary</color>
-    <color name="nav_inactive">@color/text_muted</color>
-    <color name="orange_dark">#D97C10</color>
-    <color name="orange_light">#FEF0DC</color>
-    <color name="orange_primary">#F7941D</color>
-    <color name="orange_ripple">#1AF7941D</color>
+    <color name="nav_active">@color/brand_yellow</color>
+    <color name="nav_inactive">#8D8D86</color>
+    <color name="orange_dark">#C81018</color>
+    <color name="orange_light">#FFF1A8</color>
+    <color name="orange_primary">#ED1C24</color>
+    <color name="orange_ripple">#1AED1C24</color>
     <color name="red_error">#DC2626</color>
     <color name="text_dark">#111827</color>
-    <color name="text_muted">#9CA3AF</color>
-    <color name="text_primary">#1A1A2E</color>
-    <color name="text_secondary">#4B5563</color>
+    <color name="text_muted">#97978F</color>
+    <color name="text_primary">#1B1B1B</color>
+    <color name="text_secondary">#6F6F68</color>
     <color name="white">#FFFFFF</color>
     <string name="about_role_label">About the Role</string>
     <string name="add_experience">+ Add</string>
@@ -191,9 +194,10 @@
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="android:colorBackground">@color/bg_primary</item>
         <item name="colorError">@color/red_error</item>
-        <item name="android:statusBarColor">@color/orange_primary</item>
-        <item name="android:navigationBarColor">@color/white</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:statusBarColor">@color/brand_yellow</item>
+        <item name="android:navigationBarColor">@color/brand_black</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
     <style name="ToolbarTitle" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textSize">16sp</item>
