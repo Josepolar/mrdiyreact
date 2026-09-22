@@ -1,5 +1,7 @@
 # MR.D.I.Y. Careers download site
 
+Production site: https://mrdiy-careers-download.vercel.app/
+
 This is a standalone static download page for the Android app. The APK is
 available at `downloads/mrdiy-careers.apk`.
 
