@@ -4,7 +4,9 @@ import java.io.InputStream
 
 object ResumeFiles {
     const val MAX_BYTES = 10 * 1024 * 1024
-    const val BUCKET = "private-resumes"
+    // The deployed Supabase project uses the existing `resumes` bucket.
+    // Keep ownership enforced by the first path segment (the authenticated UID).
+    const val BUCKET = "resumes"
     fun readBounded(input: InputStream): ByteArray {
         val output = java.io.ByteArrayOutputStream()
         val buffer = ByteArray(8192)
