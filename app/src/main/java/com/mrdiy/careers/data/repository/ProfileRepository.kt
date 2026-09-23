@@ -295,12 +295,17 @@ class ProfileRepository(private val context: Context) {
         val mergedSkills = (existing.skills.orEmpty().split(",") + parsed.skills).map { it.trim() }
             .filter { it.isNotEmpty() }.distinctBy { it.lowercase() }
         // Send only resume fields; never overwrite the user's personal information.
-        val updated = client.from("profiles").update(kotlinx.serialization.json.buildJsonObject {
+        client.from("profiles").update(kotlinx.serialization.json.buildJsonObject {
             put("resume_url", JsonPrimitive(path))
-            put("resume_name", JsonPrimitive(name))
             put("skills", JsonPrimitive(mergedSkills.joinToString(",")))
-        }) { filter { eq("user_id", uid) }; select() }.decodeSingle<UserProfileRow>()
+        }) { filter { eq("user_id", uid) } }
         check(uid == getCurrentUserId())
-        saveLocally(uid, updated.toDomain())
+        val local = loadFromPrefs(uid).copy(
+            resumeUrl = path,
+            resumeName = name,
+            resumeText = text,
+            skills = mergedSkills
+        )
+        saveLocally(uid, local)
     }
 }
