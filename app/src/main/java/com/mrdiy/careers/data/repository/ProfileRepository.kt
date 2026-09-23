@@ -193,6 +193,19 @@ class ProfileRepository(private val context: Context) {
         userId.isNotBlank() && context.getSharedPreferences("profile_$userId", Context.MODE_PRIVATE)
             .getBoolean("profile_sync_pending", false)
 
+    fun saveResumeLocally(uid: String, name: String, parsed: UserProfile, text: String): UserProfile {
+        val current = loadFromPrefs(uid)
+        val merged = current.copy(
+            resumeName = name,
+            resumeText = text,
+            skills = (current.skills + parsed.skills).distinctBy { it.lowercase() }
+        )
+        saveLocally(uid, merged)
+        context.getSharedPreferences("profile_$uid", Context.MODE_PRIVATE)
+            .edit().putBoolean("resume_sync_pending", true).apply()
+        return merged
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // LOAD
     // ─────────────────────────────────────────────────────────────────────────

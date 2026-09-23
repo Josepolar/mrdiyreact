@@ -38,8 +38,11 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
             var uploadedPath: String? = null
             var committed = false
             var commitStarted = false
+            var uid = ""
+            var parsed: UserProfile? = null
+            var extractedText = ""
             try {
-                val uid = profileRepo.getCurrentUserId()
+                uid = profileRepo.getCurrentUserId()
                 if (uid.isBlank()) { _state.value = ResumeUploadState.Error("Please sign in to upload a resume."); return@launch }
                 _state.value = ResumeUploadState.FileSelected(fileName)
                 val bytes = withContext(Dispatchers.IO) {
@@ -49,8 +52,9 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
                 val extension = ResumeFiles.extension(fileName, context.contentResolver.getType(uri), bytes)
                 _state.value = ResumeUploadState.ExtractingText
                 val text = resumeRepo.extractText(bytes, extension)
+                extractedText = text
                 ensureActive()
-                val parsed = resumeRepo.parseResume(text)
+                parsed = resumeRepo.parseResume(text)
                 check(uid == profileRepo.getCurrentUserId())
                 val path = "$uid/resume-${java.util.UUID.randomUUID()}.$extension"
                 _state.value = ResumeUploadState.UploadingFile
@@ -63,12 +67,12 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
                 // Finish a started DB commit before cancellation cleanup can delete the object.
                 withContext(NonCancellable) {
                     commitStarted = true
-                    profileRepo.persistResume(uid, fileName, path, parsed, text)
+                    profileRepo.persistResume(uid, fileName, path, parsed!!, text)
                     committed = true
                 }
                 _state.value = ResumeUploadState.ParseSuccess(
                     profileRepo.loadFromPrefs(uid),
-                    ResumeParseResult(success = true, skills = parsed.skills,
+                    ResumeParseResult(success = true, skills = parsed!!.skills,
                         summary = if (text.isBlank()) "Resume uploaded. Add your skills in your profile to improve matches."
                         else "Resume uploaded. Review the detected skills in your profile.")
                 )
@@ -80,7 +84,21 @@ class ResumeUploadViewModel(application: Application) : AndroidViewModel(applica
                 _state.value = ResumeUploadState.Error("Could not upload this file. Choose a valid PDF or TXT smaller than 10 MB, then retry.")
             } catch (error: Exception) {
                 SafeDiagnostics.record("resume_upload", error)
-                _state.value = ResumeUploadState.Error("Resume upload failed. Please try again.")
+                // The PDF has already been parsed at this point. Preserve the scan
+                // locally so matching still works while storage/RLS sync is retried.
+                if (uid.isNotBlank() && parsed != null && extractedText.isNotBlank()) {
+                    val local = profileRepo.saveResumeLocally(uid, fileName, parsed!!, extractedText)
+                    _state.value = ResumeUploadState.ParseSuccess(
+                        local,
+                        ResumeParseResult(
+                            success = true,
+                            skills = parsed!!.skills,
+                            summary = "Resume scanned successfully. Cloud upload will retry when available."
+                        )
+                    )
+                } else {
+                    _state.value = ResumeUploadState.Error("Resume upload failed. Please try again.")
+                }
             } finally {
                 // If a DB response is lost, preserve the object: the row may already reference it.
                 if (!committed && !commitStarted && uploadedPath != null) withContext(NonCancellable) {
