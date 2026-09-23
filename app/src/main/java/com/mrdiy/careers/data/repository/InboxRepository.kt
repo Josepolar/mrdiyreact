@@ -34,5 +34,15 @@ class InboxRepository(private val context: Context) {
         if (userId.isNullOrBlank()) return@runCatching emptyList()
         SupabaseProvider.client.postgrest["messages"].select { filter { eq("user_id", userId!!) } }
             .decodeList<MessageRow>().map { Message(it.id, it.sender_name, it.sender_avatar, it.last_message, it.time_ago, it.is_read, it.unread_count, it.job_id) }
+    }.recoverCatching { error ->
+        // Messages are optional in older Supabase projects. An absent table or
+        // pre-migration schema means there are simply no messages to display;
+        // it should not make the Messages screen unusable.
+        val message = error.message.orEmpty()
+        if (message.contains("PGRST205") || message.contains("Could not find the table")) {
+            emptyList()
+        } else {
+            throw error
+        }
     } }
 }
