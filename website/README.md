@@ -1,5 +1,11 @@
 # MR.D.I.Y. Careers download site
 
+Project creator and developer: **PolarDredd**. See [project credits](../CREDITS.md).
+
+`index.html` is the main page and `styles.css` defines its presentation.
+See [assets notes](assets/README.md) for artwork maintenance and
+[download notes](downloads/README.md) for the APK replacement workflow.
+
 Production site: https://mrdiy-careers-download.vercel.app/
 
 This is a standalone static download page for the Android app. The APK is

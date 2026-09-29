@@ -1,0 +1,16 @@
+<type>(<area>): <describe the change>
+
+Why:
+<explain the problem and resulting behavior>
+
+Folders:
+- <folder/>: <what changed and what the next developer needs to know>
+
+Validation:
+<checks performed and results; state anything not tested>
+
+Project credit: PolarDredd
+
+# Replace all placeholders before committing.
+# Add one Folders entry for each affected maintained folder.
+# Preserve the actual contributor's Git author identity.
